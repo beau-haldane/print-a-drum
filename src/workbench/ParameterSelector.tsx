@@ -154,7 +154,7 @@ export const ParameterSelector = () => {
         step={0.05}
         propertyName="newFitmentTolerance"
       />
-      <Button loading>Loading</Button>
+      <Button onClick={() => store.process(shellParameters)}>Generate</Button>
     </div>
   );
 };
