@@ -9,8 +9,8 @@ export default defineConfig({
     reactPlugin(),
     VitePWA({
       manifest: {
-        short_name: "Replicad Studio",
-        name: "The sandbox for your replicad projects",
+        short_name: "Print A Drum",
+        name: "Generate and 3D print your own drums",
         icons: [
           {
             src: "favicon.ico",
@@ -52,7 +52,7 @@ export default defineConfig({
         "textures/*",
       ],
       workbox: {
-        cacheId: "replicad-studio",
+        cacheId: "print-a-drum",
         globPatterns: [
           "assets/**.{js,css,html,jpg,wasm}",
           "*.{svg,png,jpg,ico}",
