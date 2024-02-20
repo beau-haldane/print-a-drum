@@ -1,12 +1,10 @@
 import React from "react";
-import styled from "styled-components";
-
 import Configure from "../icons/Configure";
 import Clipping from "../icons/Clipping";
 import Download from "../icons/Download";
 import ClippingParams from "../visualiser/editor/ClippingParams";
 import { FaceInfo, EdgeInfo } from "../visualiser/editor/HighlighedInfo.jsx";
-import { InfoBottomLeft, InfoTopRight, InfoCenter } from "../components/FloatingInfo";
+import { InfoBottomLeft, InfoTopRight } from "../components/FloatingInfo";
 import DownloadDialog from "../visualiser/editor/DownloadDialog";
 import ParamsEditor from "../visualiser/editor/ParamsEditor";
 import LoadingScreen from "../components/LoadingScreen";

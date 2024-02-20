@@ -110,7 +110,6 @@ export const ParameterSelector = () => {
         step={0.25}
         propertyName="newDepthInches"
       />
-
       <NumberInput
         label="Lugs"
         defaultValue={shellParameters.lugs}
@@ -119,7 +118,6 @@ export const ParameterSelector = () => {
         step={1}
         propertyName="newLugs"
       />
-
       <NumberInput
         label="Lug Hole Diameter"
         defaultValue={shellParameters.lugHoleDiameter}
@@ -128,7 +126,6 @@ export const ParameterSelector = () => {
         step={0.1}
         propertyName="newLugHoleDiameter"
       />
-
       <NumberInput
         label="Lug Hole Spacing"
         defaultValue={shellParameters.lugHoleSpacing}
@@ -141,7 +138,6 @@ export const ParameterSelector = () => {
         step={1}
         propertyName="newLugHoleSpacing"
       />
-
       <NumberInput
         label="Shell Thickness"
         defaultValue={shellParameters.shellThickness}
@@ -150,7 +146,6 @@ export const ParameterSelector = () => {
         step={1}
         propertyName="newShellThickness"
       />
-
       <NumberInput
         label="Fitment Tolerance"
         defaultValue={shellParameters.fitmentTolerance}
@@ -159,9 +154,7 @@ export const ParameterSelector = () => {
         step={0.05}
         propertyName="newFitmentTolerance"
       />
-      <Button color="success" onClick={() => store.process(shellParameters)}>
-        Generate
-      </Button>
+      <Button loading>Loading</Button>
     </div>
   );
 };
