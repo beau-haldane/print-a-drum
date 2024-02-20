@@ -10,25 +10,15 @@ import { InfoBottomLeft, InfoTopRight, InfoCenter } from "../components/Floating
 import DownloadDialog from "../visualiser/editor/DownloadDialog";
 import ParamsEditor from "../visualiser/editor/ParamsEditor";
 import LoadingScreen from "../components/LoadingScreen";
-
 import { observer } from "mobx-react";
-
 import useEditorStore from "../visualiser/editor/useEditorStore";
-import { HeaderButton, HeaderSelect } from "./panes";
-import Loading from "../icons/Loading";
+import { HeaderButton } from "./panes";
 import PresentationViewer from "../viewers/PresentationViewer.jsx";
-import LoadingAnimation from "../icons/Loading";
-
-const Spacer = styled.div`
-  flex: 1;
-`;
 
 export const VisualizerButtons = observer(() => {
   const store = useEditorStore();
   return (
     <>
-
-
       <HeaderButton onClick={() => store.ui.changeDownload(true)} title="Download">
         <Download />
       </HeaderButton>
@@ -55,10 +45,6 @@ export const VisualizerButtons = observer(() => {
     </>
   );
 });
-
-const LoadingInfo = styled(InfoBottomLeft)`
-  color: var(--color-primary-light);
-`;
 
 export default observer(function VisualizerPane() {
   const store = useEditorStore();
