@@ -2,7 +2,7 @@ import React, { useState, useMemo } from "react";
 import { lighten, darken, complement } from "polished";
 import { Plane } from "three";
 
-import { Positionner, Box } from "./Positionner.jsx";
+import { Positioner, Box } from "./Positioner.jsx";
 import ClipPlane from "./ClipPlane.jsx";
 import {
   useWrappedFaceEvent,
@@ -136,7 +136,7 @@ export function ShapeGeometries({
   const [selectedFace, selectFace] = useSelection(selectMode, ["all", "faces"]);
   const [selectedEdge, selectEdge] = useSelection(selectMode, ["all", "edges"]);
 
-  const P = disableAutoPosition ? React.Fragment : Positionner;
+  const P = disableAutoPosition ? React.Fragment : Positioner;
 
   return (
     <P>

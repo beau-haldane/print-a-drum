@@ -18,7 +18,7 @@ const positionContext = createContext({
   refreshPositions: () => null,
 });
 
-export function Positionner({ children }) {
+export function Positioner({ children }) {
   const boxesRef = useRef([]);
   const boundingBox = useMemo(() => new Box3(), []);
   const vec = useMemo(() => new Vector3(), []);
