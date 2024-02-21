@@ -9,28 +9,26 @@ import { generateBearingEdges } from "./bearingEdges";
 
 // Drum Generator
 export const generate3DPSD = ({
-  diameterInches,
-  depthInches,
-  lugs,
-  lugHoleDiameter,
-  lugHoleSpacing,
-  shellThickness: thickness,
   fitmentTolerance,
-}, updateProgress) => {
+  shell,
+  lugs,
+}, updateProgress: (number: number) => string) => {
+  const { depthInches, diameterInches, shellThickness } = shell;
+  const { lugNumber } = lugs;
   // Bearing Edge Constants
   const bearingEdgeHeight = 30;
   const bearingEdgeSegmentCoverage = 2
   // Shell Constants
   const depth = inchesToMillimeters(depthInches);
   const radius = inchesToMillimeters(diameterInches) / 2;
-  const shellSegmentVertexAngle = 360 / lugs;
+  const shellSegmentVertexAngle = 360 / lugNumber;
   const shellSegmentHeight = depth - bearingEdgeHeight * 2;
   const shellCenterPoint = bearingEdgeHeight + shellSegmentHeight / 2;
   // Tab Constants
   const tabWidth = 10;
   const tabVertexAngle = calculateVertexAngle(radius, tabWidth);
-  const tabThickness = Math.floor(thickness / 3);
-  const tabOuterRadius = radius - (thickness - tabThickness) / 2;
+  const tabThickness = Math.floor(shellThickness / 3);
+  const tabOuterRadius = radius - (shellThickness - tabThickness) / 2;
   const tabFitmentToleranceDegrees = calculateVertexAngle(
     radius,
     fitmentTolerance
@@ -52,7 +50,7 @@ export const generate3DPSD = ({
         shellSegmentPlane,
         fitmentTolerance,
         tabFitmentToleranceDegrees,
-        lugs,
+        lugNumber,
         shellSegmentHeight
       );
       updateProgress(0.5);
@@ -60,7 +58,7 @@ export const generate3DPSD = ({
       shellSegmentVertexAngle,
       interlockingTabPockets,
       radius,
-      thickness,
+      shellThickness,
       bearingEdgeHeight,
       tabOuterRadius,
       tabVertexAngle,
@@ -73,9 +71,10 @@ export const generate3DPSD = ({
     );
     updateProgress(0.75);
     const shellSegments = generateShellSegments(
+      depth,
       radius,
       shellSegmentVertexAngle,
-      thickness,
+      shellThickness,
       shellSegmentHeight,
       shellSegmentPlane,
       tabOuterRadius,
@@ -83,8 +82,6 @@ export const generate3DPSD = ({
       tabThickness,
       fitmentTolerance,
       tabFitmentToleranceDegrees,
-      lugHoleDiameter,
-      lugHoleSpacing,
       shellCenterPoint,
       interlockingTabPockets,
       lugs
