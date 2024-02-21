@@ -1,7 +1,7 @@
 import { NumberInput } from "@mui/base/Unstable_NumberInput/NumberInput";
 import { Button, FormLabel, Input, TextField } from "@mui/material";
 import React from "react";
-import { CustomNumberInput } from "./components/CustomNumberInput";
+import { CustomNumberInput } from "./CustomNumberInput";
 
 export const ParameterSelector = ({
   shellParameters,

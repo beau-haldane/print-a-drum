@@ -4,7 +4,7 @@ import React, { useState, useEffect } from "react";
 import * as THREE from "three";
 import { wrap, proxy } from "comlink";
 import PresentationViewer from "./replicad-studio-components/PresentationViewer.jsx";
-import { ParameterSelector } from "./ParameterSelector.tsx";
+import { ParameterSelector } from "./components/ParameterSelector.tsx";
 
 // @ts-expect-error - Property 'DefaultUp' does not exist on type 'typeof Object3D', however this code executes fine and is necessary to the correct rotational axis
 THREE.Object3D.DefaultUp.set(0, 0, 1);

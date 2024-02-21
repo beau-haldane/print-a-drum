@@ -76,7 +76,7 @@ const StyledInputRoot = styled('div')(
   grid-template-rows: 1fr 1fr;
   overflow: hidden;
   column-gap: 8px;
-  padding: 4px;
+  padding: 4px 6px 4px 8px;
 
   &.${numberInputClasses.focused} {
     border-color: ${blue[400]};
@@ -99,14 +99,13 @@ const StyledInputElement = styled('input')(
   font-size: 0.875rem;
   font-family: inherit;
   font-weight: 400;
-  line-height: 1.5;
+  line-height: 1;
   grid-column: 1/2;
   grid-row: 1/3;
   color: ${theme.palette.mode === 'dark' ? grey[300] : grey[900]};
   background: inherit;
   border: none;
   border-radius: inherit;
-  padding: 8px 12px;
   outline: 0;
 `,
 );
@@ -119,8 +118,8 @@ const StyledButton = styled('button')(
   align-items: center;
   appearance: none;
   padding: 0;
-  width: 19px;
-  height: 19px;
+  width: 20px;
+  height: 12px;
   font-family: system-ui, sans-serif;
   font-size: 0.875rem;
   line-height: 1;
