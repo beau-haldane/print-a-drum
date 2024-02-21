@@ -1,23 +1,20 @@
 import { makePlane } from "replicad";
-import {
-  inchesToMillimeters,
-  calculateVertexAngle,
-} from "./utils";
+import { inchesToMillimeters, calculateVertexAngle } from "./utils";
 import { generateShellSegments } from "./shellSegments";
 import { generateInterlockingTabs } from "./interlockingTabs";
 import { generateBearingEdges } from "./bearingEdges";
+import { Drum } from "./types";
 
 // Drum Generator
-export const generate3DPSD = ({
-  fitmentTolerance,
-  shell,
-  lugs,
-}, updateProgress: (number: number) => string) => {
+export const generate3DPSD = (
+  { fitmentTolerance, shell, lugs, bearingEdges }: Drum,
+  updateProgress: (number: number) => string
+) => {
   const { depthInches, diameterInches, shellThickness } = shell;
   const { lugNumber } = lugs;
   // Bearing Edge Constants
   const bearingEdgeHeight = 30;
-  const bearingEdgeSegmentCoverage = 2
+  const bearingEdgeSegmentCoverage = 2;
   // Shell Constants
   const depth = inchesToMillimeters(depthInches);
   const radius = inchesToMillimeters(diameterInches) / 2;
@@ -53,7 +50,7 @@ export const generate3DPSD = ({
         lugNumber,
         shellSegmentHeight
       );
-      updateProgress(0.5);
+    updateProgress(0.5);
     const { bearingEdgesTop, bearingEdgesBottom } = generateBearingEdges(
       shellSegmentVertexAngle,
       interlockingTabPockets,
@@ -67,7 +64,8 @@ export const generate3DPSD = ({
       tabFitmentToleranceDegrees,
       basePlane,
       shellSegmentHeight,
-      bearingEdgeSegmentCoverage
+      bearingEdgeSegmentCoverage,
+      bearingEdges
     );
     updateProgress(0.75);
     const shellSegments = generateShellSegments(
@@ -87,7 +85,8 @@ export const generate3DPSD = ({
       lugs
     );
     updateProgress(1);
-
+      console.log(bearingEdgesTop);
+      
     return [
       ...shellSegments,
       ...interlockingTabs,

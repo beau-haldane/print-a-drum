@@ -252,4 +252,5 @@ const Option = styled(BaseOption)(
 
 const Popup = styled("div")`
   z-index: 100;
+  font-family: 'Roboto';
 `;

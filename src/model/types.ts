@@ -21,9 +21,9 @@ export type WrappedShapeArray = Array<{
 
 export interface Drum {
   fitmentTolerance: number;
-  shell: DrumShell
-  bearingEdges: BearingEdges
-  lugs: Lugs
+  shell: DrumShell;
+  bearingEdges: BearingEdges;
+  lugs: Lugs;
 }
 
 export interface DrumShell {
@@ -33,17 +33,20 @@ export interface DrumShell {
 }
 
 export interface BearingEdges {
-  outerEdge: EdgeProfile;
-  innerEdge: EdgeProfile;
+  topBearingEdge: BearingEdgeProfile;
+  bottomBearingEdge: BearingEdgeProfile;
 }
 
-export interface EdgeProfile {
-  profileType: 'roundover' | 'fillet' | null;
-  profileSize: number
+export interface BearingEdgeProfile {
+  thickness?: number;
+  outerEdge: { profileType: ProfileType; profileSize: number };
+  innerEdge: { profileType: ProfileType };
 }
+
+export type ProfileType = "roundover" | "chamfer" | null;
 
 export interface Lugs {
-  lugType: 'singlePoint' | 'doublePoint';
+  lugType: "singlePoint" | "doublePoint";
   lugRows: 1 | 2;
   lugNumber: number;
   lugHoleSpacing: number;
