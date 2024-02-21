@@ -133,7 +133,6 @@ export function ShapeGeometries({
   LineMaterial = "lineBasicMaterial",
   FaceMaterial = "meshBasicMaterial",
 }) {
-  console.log(shapes);
   const [selectedFace, selectFace] = useSelection(selectMode, ["all", "faces"]);
   const [selectedEdge, selectEdge] = useSelection(selectMode, ["all", "edges"]);
 
