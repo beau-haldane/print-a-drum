@@ -43,9 +43,11 @@ export default function ReplicadApp() {
       outerEdge: {
         profileType: "roundover",
         profileSize: shell.shellThickness / 2,
+        customChamferAngle: 0
       },
       innerEdge: {
         profileType: "chamfer",
+        customChamferAngle: 0
       },
     },
     bottomBearingEdge: {
@@ -53,9 +55,11 @@ export default function ReplicadApp() {
       outerEdge: {
         profileType: "roundover",
         profileSize: shell.shellThickness / 2,
+        customChamferAngle: 0
       },
       innerEdge: {
         profileType: "chamfer",
+        customChamferAngle: 0
       },
     },
   });

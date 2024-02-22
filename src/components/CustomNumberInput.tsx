@@ -51,12 +51,6 @@ export const NumberInput = ({ label, defaultValue, min, max, step, propertyName,
   );
 };
 
-export default function NumberInputIntroduction() {
-  return (
-    <CustomNumberInput aria-label="Demo number input" placeholder="Type a number…" />
-  );
-}
-
 const blue = {
   100: '#DAECFF',
   200: '#80BFFF',

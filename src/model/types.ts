@@ -39,12 +39,12 @@ export interface BearingEdges {
 }
 
 export interface BearingEdgeProfile {
-  thickness?: number;
-  outerEdge: { profileType: ProfileType; profileSize: number };
-  innerEdge: { profileType: ProfileType };
+  thickness: number;
+  outerEdge: { profileType: ProfileType; profileSize: number, customChamferAngle?: number };
+  innerEdge: { profileType: ProfileType, customChamferAngle?: number };
 }
 
-export type ProfileType = "roundover" | "chamfer" | 'none';
+export type ProfileType = "roundover" | "chamfer" | 'customChamfer' | 'none';
 
 export interface Lugs {
   lugType: "singlePoint" | "doublePoint";
