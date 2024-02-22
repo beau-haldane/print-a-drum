@@ -4,6 +4,7 @@ import {
   NumberInputProps,
   numberInputClasses,
 } from '@mui/base/Unstable_NumberInput';
+import { FormLabel } from "@mui/material";
 import { styled } from '@mui/system';
 
 export const CustomNumberInput = React.forwardRef(function CustomNumberInput(
@@ -31,6 +32,24 @@ export const CustomNumberInput = React.forwardRef(function CustomNumberInput(
     />
   );
 });
+
+export const NumberInput = ({ label, defaultValue, min, max, step, propertyName, updateState, state, setState }) => {
+  return (
+    <div>
+      <FormLabel sx={{fontSize: '14px',}}>{label}</FormLabel>
+      <CustomNumberInput
+        aria-label={label}
+        value={defaultValue}
+        min={min}
+        max={max}
+        step={step}
+        onChange={(event, val) =>
+          updateState(state, setState, val, `${propertyName}`)
+        }
+      />
+    </div>
+  );
+};
 
 export default function NumberInputIntroduction() {
   return (

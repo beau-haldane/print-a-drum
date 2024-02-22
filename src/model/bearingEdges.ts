@@ -1,4 +1,4 @@
-import { ShapeArray, WrappedShapeArray } from "./types";
+import { BearingEdges, ShapeArray, WrappedShapeArray } from "./types";
 import { generateSegmentBody } from "./utils";
 import { Compound, Plane, Solid, makePlane } from "replicad";
 
@@ -15,7 +15,8 @@ export const generateBearingEdges = (
   tabFitmentToleranceDegrees: number,
   basePlane: Plane,
   shellSegmentHeight: number,
-  segmentCoverage = 2
+  segmentCoverage = 2,
+  bearingEdgeParameters: BearingEdges
 ): {
   bearingEdgesTop: WrappedShapeArray;
   bearingEdgesBottom: WrappedShapeArray;
@@ -23,7 +24,8 @@ export const generateBearingEdges = (
   const bearingEdgeVertexAngle = shellSegmentVertexAngle * segmentCoverage;
   const generateBearingEdgeSegment = (
     interlockingTabPockets: ShapeArray,
-    plane: Plane
+    plane: Plane,
+    thickness
   ): Compound => {
     const bearingEdgeSegmentBase = generateSegmentBody(
       radius,
@@ -69,41 +71,111 @@ export const generateBearingEdges = (
     return bearingEdgeSegmentWithTabPockets as Compound;
   };
 
-  const bearingEdgeBase = generateBearingEdgeSegment(
+  const { topBearingEdge, bottomBearingEdge } = bearingEdgeParameters;
+
+  const bottomBearingEdgeThickness =
+    bottomBearingEdge.thickness && bottomBearingEdge.thickness > thickness
+      ? bottomBearingEdge.thickness
+      : thickness;
+
+  const topBearingEdgeThickness =
+    topBearingEdge.thickness && topBearingEdge.thickness > thickness
+      ? topBearingEdge.thickness
+      : thickness;
+
+  const bottomBearingEdgeBase = generateBearingEdgeSegment(
     interlockingTabPockets,
-    basePlane
+    basePlane,
+    bottomBearingEdgeThickness
   );
 
-  const outerEdge = (e) =>
-    e.ofCurveType("CIRCLE").atDistance(radius, [0, 0]).inPlane(basePlane);
-  const innerEdge = (e) =>
-    e
-      .ofCurveType("CIRCLE")
-      .atDistance(radius - thickness, [0, 0])
-      .inPlane(basePlane);
+  let topBearingEdgeBase =
+    JSON.stringify(topBearingEdge) === JSON.stringify(bottomBearingEdge)
+      ? bottomBearingEdgeBase
+      : generateBearingEdgeSegment(
+          interlockingTabPockets,
+          basePlane,
+          topBearingEdgeThickness
+        );
+
+  const findEdge = (e, edgeRadius, plane = basePlane) =>
+    e.ofCurveType("CIRCLE").atDistance(edgeRadius, [0, 0]).inPlane(plane);
 
   const bearingEdges: {
     bearingEdgesTop: WrappedShapeArray;
     bearingEdgesBottom: WrappedShapeArray;
   } = { bearingEdgesTop: [], bearingEdgesBottom: [] };
   for (let i = 0; i < 360 / bearingEdgeVertexAngle; i++) {
-    bearingEdges.bearingEdgesBottom.push({
-      shape: bearingEdgeBase
-        .clone()
-        .rotate(i * bearingEdgeVertexAngle)
-        .fillet(thickness * 0.75 - 0.01, outerEdge)
-        .chamfer(thickness * 0.25, innerEdge),
-      name: `Bearing Edge Bottom ${i + 1}`,
-    });
+    // Top Edges
+    const { outerEdge: topOuterEdge, innerEdge: topInnerEdge } = topBearingEdge;
+    let topBearingEdgeProcessed = topBearingEdgeBase
+      .clone()
+      .rotate(i * bearingEdgeVertexAngle);
+    // Cut outer bearing edge
+    if (topOuterEdge.profileType === "roundover") {
+      topBearingEdgeProcessed = topBearingEdgeProcessed.fillet(
+        topOuterEdge.profileSize,
+        (e) => findEdge(e, radius)
+      );
+    } else if (topOuterEdge.profileType === "chamfer") {
+      topBearingEdgeProcessed = topBearingEdgeProcessed.chamfer(
+        topOuterEdge.profileSize,
+        (e) => findEdge(e, radius)
+      );
+    }
+    // Cut inner bearing edge
+    if (topInnerEdge.profileType === "roundover") {
+      topBearingEdgeProcessed = topBearingEdgeProcessed.fillet(
+        topBearingEdgeThickness - topOuterEdge.profileSize - 0.1,
+        (e) => findEdge(e, radius - topBearingEdgeThickness)
+      );
+    } else if (topInnerEdge.profileType === "chamfer") {
+      topBearingEdgeProcessed = topBearingEdgeProcessed.chamfer(
+        topBearingEdgeThickness - topOuterEdge.profileSize - 0.1,
+        (e) => findEdge(e, radius - topBearingEdgeThickness)
+      );
+    }
+    
     bearingEdges.bearingEdgesTop.push({
-      shape: bearingEdgeBase
-        .clone()
-        .fillet(thickness * 0.75 - 0.01, outerEdge)
-        .chamfer(thickness * 0.25, innerEdge)
-        .mirror("XY", [0,0])
-        .rotate(i * bearingEdgeVertexAngle)
+      shape: topBearingEdgeProcessed
+        .mirror("XY", [0, 0])
         .translateZ(shellSegmentHeight + bearingEdgeHeight * 2),
       name: `Bearing Edge Top ${i + 1}`,
+    });
+
+    // Bottom Edges
+    const { outerEdge: bottomOuterEdge, innerEdge: bottomInnerEdge } =
+      bottomBearingEdge;
+    let bottomBearingEdgeProcessed = bottomBearingEdgeBase
+      .clone()
+      .rotate(i * bearingEdgeVertexAngle);
+    // Cut outer bearing edge
+    if (bottomOuterEdge.profileType === "roundover") {
+      bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.fillet(
+        bottomOuterEdge.profileSize,
+        (e) => findEdge(e, radius)
+      );
+    } else if (bottomOuterEdge.profileType === "chamfer") {
+      bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.chamfer(
+        bottomOuterEdge.profileSize,
+        (e) => findEdge(e, radius)
+      );
+    }
+    // Cut inner bearing edge
+    if (bottomInnerEdge.profileType === "roundover") {
+      bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.fillet(
+        bottomOuterEdge.profileSize + 0.1 - bottomBearingEdgeThickness,
+        (e) => findEdge(e, radius - bottomBearingEdgeThickness)
+      );
+    } else if (bottomInnerEdge.profileType === "chamfer") {
+      bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.chamfer(
+        bottomBearingEdgeThickness - bottomOuterEdge.profileSize - 0.1,
+        (e) => findEdge(e, radius - bottomBearingEdgeThickness)
+      );
+    }
+    bearingEdges.bearingEdgesBottom.push({
+      shape: bottomBearingEdgeProcessed,
+      name: `Bearing Edge Bottom ${i + 1}`,
     });
   }
 

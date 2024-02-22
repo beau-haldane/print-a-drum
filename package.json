@@ -18,6 +18,7 @@
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
     "@mui/base": "^5.0.0-beta.36",
+    "@mui/icons-material": "^5.15.10",
     "@mui/material": "^5.15.10",
     "@react-three/drei": "^9.97.6",
     "@react-three/fiber": "8.10.0",
