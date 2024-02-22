@@ -44,7 +44,7 @@ export interface BearingEdgeProfile {
   innerEdge: { profileType: ProfileType };
 }
 
-export type ProfileType = "roundover" | "chamfer" | null;
+export type ProfileType = "roundover" | "chamfer" | 'none';
 
 export interface Lugs {
   lugType: "singlePoint" | "doublePoint";
