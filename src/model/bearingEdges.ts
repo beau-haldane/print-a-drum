@@ -114,24 +114,24 @@ export const generateBearingEdges = (
     // Cut outer bearing edge
     if (topOuterEdge.profileType === "roundover") {
       topBearingEdgeProcessed = topBearingEdgeProcessed.fillet(
-        topOuterEdge.profileSize,
+        topOuterEdge.profileSize - 0.01,
         (e) => findEdge(e, radius)
       );
     } else if (topOuterEdge.profileType === "chamfer") {
       topBearingEdgeProcessed = topBearingEdgeProcessed.chamfer(
-        topOuterEdge.profileSize,
+        topOuterEdge.profileSize - 0.01,
         (e) => findEdge(e, radius)
       );
     }
     // Cut inner bearing edge
     if (topInnerEdge.profileType === "roundover") {
       topBearingEdgeProcessed = topBearingEdgeProcessed.fillet(
-        topBearingEdgeThickness - topOuterEdge.profileSize - 0.1,
+        topBearingEdgeThickness - topOuterEdge.profileSize - 0.01,
         (e) => findEdge(e, radius - topBearingEdgeThickness)
       );
     } else if (topInnerEdge.profileType === "chamfer") {
       topBearingEdgeProcessed = topBearingEdgeProcessed.chamfer(
-        topBearingEdgeThickness - topOuterEdge.profileSize - 0.1,
+        topBearingEdgeThickness - topOuterEdge.profileSize - 0.01,
         (e) => findEdge(e, radius - topBearingEdgeThickness)
       );
     }

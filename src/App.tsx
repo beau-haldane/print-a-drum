@@ -25,7 +25,7 @@ export default function ReplicadApp() {
     diameterInches: 14,
     depthInches: 6.5,
     shellThickness: 12,
-    lugsPerSegment: 2
+    lugsPerSegment: 2,
   });
   const [lugs, setLugs] = useState<Lugs>({
     lugType: "doublePoint",
@@ -39,19 +39,20 @@ export default function ReplicadApp() {
   });
   const [bearingEdges, setBearingEdges] = useState<BearingEdges>({
     topBearingEdge: {
-      thickness: 16,
+      thickness: shell.shellThickness,
       outerEdge: {
         profileType: "roundover",
-        profileSize: 8,
+        profileSize: shell.shellThickness / 2,
       },
       innerEdge: {
-        profileType: "roundover",
+        profileType: "chamfer",
       },
     },
     bottomBearingEdge: {
+      thickness: shell.shellThickness,
       outerEdge: {
-        profileType: "chamfer",
-        profileSize: 2,
+        profileType: "roundover",
+        profileSize: shell.shellThickness / 2,
       },
       innerEdge: {
         profileType: "chamfer",
@@ -74,13 +75,14 @@ export default function ReplicadApp() {
 
   const generateModel = () => {
     setModelProgress("0%");
-    setLoading(true)
-    // @ts-expect-error - see TODO on line 1
-    cad.createAssembly(
-      printableDrum,
-      proxy(updateModelProgress),
-      proxy(updateModel)
-    ).then(() => setLoading(false));
+    setLoading(true);
+    cad // @ts-expect-error - see TODO on line 1
+      .createAssembly(
+        printableDrum,
+        proxy(updateModelProgress),
+        proxy(updateModel)
+      )
+      .then(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -94,7 +96,7 @@ export default function ReplicadApp() {
       fitmentTolerance: 0.2,
       bearingEdges,
     });
-  }, [shell, lugs]);
+  }, [shell, lugs, bearingEdges]);
 
   return (
     <>
@@ -105,6 +107,8 @@ export default function ReplicadApp() {
         setShell={setShell}
         lugs={lugs}
         setLugs={setLugs}
+        bearingEdges={bearingEdges}
+        setBearingEdges={setBearingEdges}
         generateModel={generateModel}
       />
       <section style={{ height: "100vh" }}>
@@ -132,9 +136,7 @@ export default function ReplicadApp() {
                 )`,
             }}
           >
-            <span>
-              {`Generating Drum Shell Model ${modelProgress}`}
-            </span>
+            <span>{`Generating Drum Shell Model ${modelProgress}`}</span>
           </div>
         )}
       </section>
