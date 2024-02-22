@@ -16,7 +16,8 @@ export const generateShellSegment = (
   tabFitmentToleranceDegrees: number,
   shellCenterPoint: number,
   interlockingTabPockets,
-  lugs: Lugs
+  lugs: Lugs,
+  lugsPerSegment: number
 ) => {
   const {
     lugType,
@@ -28,7 +29,7 @@ export const generateShellSegment = (
     lugHolePocketDepth,
   } = lugs;
 
-  const generateLugHoles = (lugHolesDistance = 0) => {
+  const generateLugHoles = (lugsPerSegment, lugHolesDistance = 0) => {
     let lugHole = drawCircle(lugHoleDiameter / 2)
       .sketchOnPlane("XZ", -radius)
       .extrude(thickness + 10) as Shape3D;
@@ -37,7 +38,7 @@ export const generateShellSegment = (
       const lugHolePocket = drawCircle(lugHolePocketDiameter / 2)
         .sketchOnPlane("XZ", -radius)
         .extrude(lugHolePocketDepth) as Shape3D;
-        lugHole = lugHole.fuse(lugHolePocket);
+      lugHole = lugHole.fuse(lugHolePocket);
     }
 
     const lugHoles: Shape3D[] = [];
@@ -51,21 +52,30 @@ export const generateShellSegment = (
       lugHoles.push(
         lugHole
           .clone()
-          .translateZ(shellCenterPoint - lugHolesDistance / 2)
-          .rotate(-shellSegmentVertexAngle / 2)
+          .translateZ(shellCenterPoint + lugHolesDistance / 2)
+          .rotate(shellSegmentVertexAngle / 2)
       );
+
       if (lugHolesDistance) {
         lugHoles.push(
           lugHole
             .clone()
             .translateZ(shellCenterPoint + lugHolesDistance / 2)
-            .rotate(shellSegmentVertexAngle / 2)
+            .rotate(-shellSegmentVertexAngle / 2)
         );
         lugHoles.push(
           lugHole
             .clone()
-            .translateZ(shellCenterPoint + lugHolesDistance / 2)
+            .translateZ(shellCenterPoint - lugHolesDistance / 2)
             .rotate(-shellSegmentVertexAngle / 2)
+        );
+      }
+      if (lugsPerSegment === 2) {
+        lugHoles.push(
+          lugHole.clone().translateZ(shellCenterPoint + lugHolesDistance / 2)
+        );
+        lugHoles.push(
+          lugHole.clone().translateZ(shellCenterPoint - lugHolesDistance / 2)
         );
       }
     }
@@ -96,20 +106,30 @@ export const generateShellSegment = (
 
   let lugHoles: ShapeArray = [];
   if (lugRows === 1) {
-    lugType === "singlePoint"
-      ? (lugHoles = generateLugHoles())
-      : (lugHoles = generateLugHoles(lugHoleSpacing));
+    if (lugType === "singlePoint") {
+      lugHoles = generateLugHoles(lugsPerSegment);
+    } else if (lugType === "doublePoint") {
+      lugHoles = generateLugHoles(lugsPerSegment, lugHoleSpacing);
+    }
   } else if (lugRows === 2 && lugHoleDistanceFromEdge) {
-    lugType === "singlePoint"
-      ? (lugHoles = generateLugHoles(depth - lugHoleDistanceFromEdge * 2))
-      : (lugHoles = [
-          ...generateLugHoles(depth - lugHoleDistanceFromEdge * 2),
-          ...generateLugHoles(
-            depth - (lugHoleDistanceFromEdge + lugHoleSpacing) * 2
-          ),
-        ]);
+    if (lugType === "singlePoint") {
+      lugHoles = generateLugHoles(
+        lugsPerSegment,
+        depth - lugHoleDistanceFromEdge * 2
+      );
+    } else if (lugType === "doublePoint") {
+      lugHoles = [
+        ...generateLugHoles(
+          lugsPerSegment,
+          depth - lugHoleDistanceFromEdge * 2
+        ),
+        ...generateLugHoles(
+          lugsPerSegment,
+          depth - (lugHoleDistanceFromEdge + lugHoleSpacing) * 2
+        ),
+      ];
+    }
   }
-  // Add logic for doublePoint lugs here
   const cutOperations = [...interlockingTabPockets, ...lugHoles];
 
   const shellSegment: Compound = shellSegmentBase
@@ -124,22 +144,23 @@ export const generateShellSegment = (
 };
 
 export const generateShellSegments = (
-  depth,
-  radius,
-  shellSegmentVertexAngle,
-  thickness,
-  shellSegmentHeight,
-  shellSegmentPlane,
-  tabOuterRadius,
-  tabVertexAngle,
-  tabThickness,
-  fitmentTolerance,
-  tabFitmentToleranceDegrees,
-  shellCenterPoint,
-  interlockingTabPockets,
-  lugs: Lugs
+  depth: number,
+  radius: number,
+  shellSegmentVertexAngle: number,
+  thickness: number,
+  shellSegmentHeight: number,
+  shellSegmentPlane: Plane,
+  tabOuterRadius: number,
+  tabVertexAngle: number,
+  tabThickness: number,
+  fitmentTolerance: number,
+  tabFitmentToleranceDegrees: number,
+  shellCenterPoint: number,
+  interlockingTabPockets: ShapeArray,
+  lugs: Lugs,
+  lugsPerSegment: number
 ) => {
-  const { lugNumber } = lugs;
+  shellSegmentVertexAngle = shellSegmentVertexAngle * lugsPerSegment;
   const shellSegment = generateShellSegment(
     depth,
     radius,
@@ -154,14 +175,24 @@ export const generateShellSegments = (
     tabFitmentToleranceDegrees,
     shellCenterPoint,
     interlockingTabPockets,
-    lugs
+    lugs,
+    lugsPerSegment
   );
   const shellSegments: WrappedShapeArray = [];
-  for (let i = 0; i < lugNumber; i++) {
-    shellSegments.push({
-      shape: shellSegment.clone().rotate(i * shellSegmentVertexAngle),
-      name: `Shell Segment ${i + 1}`,
-    });
+  for (let i = 0; i < 360 / shellSegmentVertexAngle; i++) {
+    if (lugsPerSegment === 1) {
+      shellSegments.push({
+        shape: shellSegment.clone().rotate(i * shellSegmentVertexAngle),
+        name: `Shell Segment ${i + 1}`,
+      });
+    } else if (lugsPerSegment === 2) {
+      shellSegments.push({
+        shape: shellSegment
+          .clone()
+          .rotate(i * shellSegmentVertexAngle - shellSegmentVertexAngle / 4),
+        name: `Shell Segment ${i + 1}`,
+      });
+    }
   }
 
   return shellSegments;
