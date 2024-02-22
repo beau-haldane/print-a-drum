@@ -1,5 +1,5 @@
 import { BearingEdges, ShapeArray, WrappedShapeArray } from "./types";
-import { generateSegmentBody } from "./utils";
+import { generateChamferCuttingTool, generateSegmentBody } from "./utils";
 import { Compound, Plane, Solid, makePlane } from "replicad";
 
 export const generateBearingEdges = (
@@ -25,15 +25,30 @@ export const generateBearingEdges = (
   const generateBearingEdgeSegment = (
     interlockingTabPockets: ShapeArray,
     plane: Plane,
-    thickness
+    bearingEdgeThickness: number
   ): Compound => {
-    const bearingEdgeSegmentBase = generateSegmentBody(
+    let bearingEdgeSegmentBase = generateSegmentBody(
       radius,
       bearingEdgeVertexAngle,
-      thickness,
+      bearingEdgeThickness,
       bearingEdgeHeight,
       plane
     );
+
+    if (bearingEdgeThickness > thickness) {
+      const cuttingTool = generateChamferCuttingTool({
+        plane: makePlane("XZ"),
+        startRadius:
+          radius - thickness,
+        chamferAngle: 30,
+        chamferWidth:
+          bearingEdgeThickness - thickness,
+        chamferStartHeight: bearingEdgeHeight,
+        chamferUp: false,
+        edgeInner: true,
+      });
+      bearingEdgeSegmentBase = bearingEdgeSegmentBase.cut(cuttingTool)
+    }
 
     const bearingEdgeTabHeight = bearingEdgeHeight - 10;
     const bearingEdgeTabPlane = makePlane(
@@ -89,7 +104,7 @@ export const generateBearingEdges = (
     bottomBearingEdgeThickness
   );
 
-  let topBearingEdgeBase =
+  const topBearingEdgeBase =
     JSON.stringify(topBearingEdge) === JSON.stringify(bottomBearingEdge)
       ? bottomBearingEdgeBase
       : generateBearingEdgeSegment(
@@ -104,7 +119,9 @@ export const generateBearingEdges = (
   const bearingEdges: {
     bearingEdgesTop: WrappedShapeArray;
     bearingEdgesBottom: WrappedShapeArray;
-  } = { bearingEdgesTop: [], bearingEdgesBottom: [] };
+    cuttingTool: WrappedShapeArray;
+  } = { bearingEdgesTop: [], bearingEdgesBottom: [], cuttingTool: [] };
+
   for (let i = 0; i < 360 / bearingEdgeVertexAngle; i++) {
     // Top Edges
     const { outerEdge: topOuterEdge, innerEdge: topInnerEdge } = topBearingEdge;
@@ -122,6 +139,25 @@ export const generateBearingEdges = (
         topOuterEdge.profileSize - 0.01,
         (e) => findEdge(e, radius)
       );
+    }else if (
+      topOuterEdge.profileType === "customChamfer" &&
+      topOuterEdge.customChamferAngle
+    ) {
+      const cuttingTool = generateChamferCuttingTool({
+        plane: makePlane("XZ"),
+        startRadius:
+          radius -
+          bearingEdgeParameters.topBearingEdge.outerEdge.profileSize,
+        chamferAngle: topOuterEdge.customChamferAngle,
+        chamferWidth:
+          topBearingEdge.thickness -
+          bearingEdgeParameters.topBearingEdge.outerEdge.profileSize,
+        chamferStartHeight: 0,
+        chamferUp: true,
+        edgeInner: false,
+      });
+
+      topBearingEdgeProcessed = topBearingEdgeProcessed.cut(cuttingTool);
     }
     // Cut inner bearing edge
     if (topInnerEdge.profileType === "roundover") {
@@ -134,8 +170,27 @@ export const generateBearingEdges = (
         topBearingEdgeThickness - topOuterEdge.profileSize - 0.01,
         (e) => findEdge(e, radius - topBearingEdgeThickness)
       );
+    } else if (
+      topInnerEdge.profileType === "customChamfer" &&
+      topInnerEdge.customChamferAngle
+    ) {
+      const cuttingTool = generateChamferCuttingTool({
+        plane: makePlane("XZ"),
+        startRadius:
+          radius -
+          bearingEdgeParameters.topBearingEdge.outerEdge.profileSize,
+        chamferAngle: topInnerEdge.customChamferAngle,
+        chamferWidth:
+          topBearingEdge.thickness -
+          bearingEdgeParameters.topBearingEdge.outerEdge.profileSize,
+        chamferStartHeight: 0,
+        chamferUp: true,
+        edgeInner: true,
+      });
+
+      topBearingEdgeProcessed = topBearingEdgeProcessed.cut(cuttingTool);
     }
-    
+
     bearingEdges.bearingEdgesTop.push({
       shape: topBearingEdgeProcessed
         .mirror("XY", [0, 0])
@@ -152,19 +207,38 @@ export const generateBearingEdges = (
     // Cut outer bearing edge
     if (bottomOuterEdge.profileType === "roundover") {
       bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.fillet(
-        bottomOuterEdge.profileSize,
+        bottomOuterEdge.profileSize - 0.01,
         (e) => findEdge(e, radius)
       );
     } else if (bottomOuterEdge.profileType === "chamfer") {
       bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.chamfer(
-        bottomOuterEdge.profileSize,
+        bottomOuterEdge.profileSize  - 0.01,
         (e) => findEdge(e, radius)
       );
+    } else if (
+      bottomOuterEdge.profileType === "customChamfer" &&
+      bottomOuterEdge.customChamferAngle
+    ) {
+      const cuttingTool = generateChamferCuttingTool({
+        plane: makePlane("XZ"),
+        startRadius:
+          radius -
+          bearingEdgeParameters.bottomBearingEdge.outerEdge.profileSize,
+        chamferAngle: bottomOuterEdge.customChamferAngle,
+        chamferWidth:
+          bottomBearingEdge.thickness -
+          bearingEdgeParameters.bottomBearingEdge.outerEdge.profileSize,
+        chamferStartHeight: 0,
+        chamferUp: true,
+        edgeInner: false,
+      });
+
+      bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.cut(cuttingTool);
     }
     // Cut inner bearing edge
     if (bottomInnerEdge.profileType === "roundover") {
       bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.fillet(
-        bottomOuterEdge.profileSize + 0.1 - bottomBearingEdgeThickness,
+        bottomBearingEdgeThickness - bottomOuterEdge.profileSize - 0.01,
         (e) => findEdge(e, radius - bottomBearingEdgeThickness)
       );
     } else if (bottomInnerEdge.profileType === "chamfer") {
@@ -172,6 +246,25 @@ export const generateBearingEdges = (
         bottomBearingEdgeThickness - bottomOuterEdge.profileSize - 0.1,
         (e) => findEdge(e, radius - bottomBearingEdgeThickness)
       );
+    } else if (
+      bottomInnerEdge.profileType === "customChamfer" &&
+      bottomInnerEdge.customChamferAngle
+    ) {
+      const cuttingTool = generateChamferCuttingTool({
+        plane: makePlane("XZ"),
+        startRadius:
+          radius -
+          bearingEdgeParameters.bottomBearingEdge.outerEdge.profileSize,
+        chamferAngle: bottomInnerEdge.customChamferAngle,
+        chamferWidth:
+          bottomBearingEdge.thickness -
+          bearingEdgeParameters.bottomBearingEdge.outerEdge.profileSize,
+        chamferStartHeight: 0,
+        chamferUp: true,
+        edgeInner: true,
+      });
+
+      bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.cut(cuttingTool);
     }
     bearingEdges.bearingEdgesBottom.push({
       shape: bottomBearingEdgeProcessed,

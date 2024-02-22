@@ -1,4 +1,4 @@
-import { Plane, Point2D, Solid, draw } from "replicad";
+import { Plane, Point2D, Shape3D, Solid, draw, makePlane } from "replicad";
 
 export const inchesToMillimeters = (inch: number) => inch * 25.4;
 
@@ -91,4 +91,47 @@ export const generateFilletedSegmentBody = (
     .extrude(depth);
 
   return segmentBody as Solid;
+};
+
+function findSideAAndHypotenuse(sideB: number, angleAlpha: number) {
+  const angleRadians = (angleAlpha * Math.PI) / 180;
+  const sideA = sideB * Math.tan(angleRadians);
+  const hypotenuse = sideB / Math.cos(angleRadians);
+  return { sideA, hypotenuse };
+}
+
+export const generateChamferCuttingTool = ({
+  plane,
+  startRadius,
+  chamferAngle,
+  chamferWidth,
+  chamferStartHeight,
+  chamferUp,
+  edgeInner = true,
+}: {
+  plane: Plane;
+  startRadius: number;
+  chamferAngle: number;
+  chamferWidth: number;
+  chamferStartHeight: number;
+  chamferUp: boolean;
+  edgeInner: boolean;
+}): Shape3D => {
+  const { hypotenuse } = findSideAAndHypotenuse(chamferWidth, chamferAngle);
+  const cuttingTool = draw()
+    .movePointerTo([startRadius, 0])
+    .polarLine(hypotenuse, edgeInner ? 180 - chamferAngle : chamferAngle)
+    .lineTo([
+      edgeInner ? startRadius - chamferWidth : startRadius + chamferWidth,
+      0,
+    ])
+    .close()
+    .sketchOnPlane(plane)
+    .revolve()
+    .translateZ(chamferUp ? chamferStartHeight : -chamferStartHeight);
+
+  if (!chamferUp) {
+    return cuttingTool.mirror("XY", [0, 0]) as Shape3D;
+  }
+  return cuttingTool as Shape3D;
 };
