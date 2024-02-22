@@ -10,7 +10,7 @@ export const generate3DPSD = (
   { fitmentTolerance, shell, lugs, bearingEdges }: Drum,
   updateProgress: (number: number) => string
 ) => {
-  const { depthInches, diameterInches, shellThickness } = shell;
+  const { depthInches, diameterInches, shellThickness, lugsPerSegment } = shell;
   const { lugNumber } = lugs;
   // Bearing Edge Constants
   const bearingEdgeHeight = 30;
@@ -82,7 +82,8 @@ export const generate3DPSD = (
       tabFitmentToleranceDegrees,
       shellCenterPoint,
       interlockingTabPockets,
-      lugs
+      lugs,
+      lugsPerSegment
     );
     updateProgress(1);
       console.log(bearingEdgesTop);

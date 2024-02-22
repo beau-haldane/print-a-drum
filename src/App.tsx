@@ -25,6 +25,7 @@ export default function ReplicadApp() {
     diameterInches: 14,
     depthInches: 6.5,
     shellThickness: 12,
+    lugsPerSegment: 2
   });
   const [lugs, setLugs] = useState<Lugs>({
     lugType: "doublePoint",

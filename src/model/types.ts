@@ -30,6 +30,7 @@ export interface DrumShell {
   diameterInches: number;
   depthInches: number;
   shellThickness: number;
+  lugsPerSegment: number;
 }
 
 export interface BearingEdges {

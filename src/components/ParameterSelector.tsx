@@ -41,8 +41,9 @@ export const ParameterSelector = ({
         borderRadius: "10px",
       }}
     >
-      <div style={{ overflowY: "scroll", height: "100%", padding: "5px", scrollbarGutter: 'stable both-edges' }}>
-        <Accordion defaultExpanded>
+      <div style={{ overflowY: "scroll", height: "100%", padding: "5px", scrollbarGutter: 'stable both-edges', display: 'flex', flexDirection: 'column', alignItems:'center' }}>
+        <h1 style={{lineHeight: 1, margin: '10px'}}>Print-A-Drum</h1>
+        <Accordion defaultExpanded sx={{width: '100%'}}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1-content"
@@ -91,6 +92,17 @@ export const ParameterSelector = ({
               max={(shell.diameterInches * 25.4) / 3}
               step={1}
               propertyName="shellThickness"
+              updateState={updateState}
+              state={shell}
+              setState={setShell}
+            />
+            <NumberInput
+              label="Lugs Per Segment"
+              defaultValue={shell.lugsPerSegment}
+              min={1}
+              max={2}
+              step={1}
+              propertyName="lugsPerSegment"
               updateState={updateState}
               state={shell}
               setState={setShell}
