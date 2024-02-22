@@ -7,6 +7,10 @@ import AccordionSummary from "@mui/material/AccordionSummary";
 import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import SelectInput from "./SelectInput";
 
+const capitalizeFirstLetter = (string: string): string => {
+  return string.charAt(0).toUpperCase() + string.slice(1);
+};
+
 export const ParameterSelector = ({
   printableDrum,
   setPrintableDrum,
@@ -14,11 +18,24 @@ export const ParameterSelector = ({
   setShell,
   lugs,
   setLugs,
+  bearingEdges,
+  setBearingEdges,
   generateModel,
 }) => {
-  const updateState = (state, setState, property, propertyName) => {
-    const newState = { ...state };
-    newState[propertyName] = property;
+  const updateState = (state, setState, value, propertyName) => {
+    function setPropertyValue(obj: {}, path: string, value: any) {
+      var schema = obj;
+      var pList = path.split(".");
+      var len = pList.length;
+      for (var i = 0; i < len - 1; i++) {
+        var elem = pList[i];
+        schema = schema[elem];
+      }
+
+      schema[pList[len - 1]] = value;
+    }
+    let newState = { ...state };
+    setPropertyValue(newState, propertyName, value);
     setState(newState);
   };
   const inputRef = React.useRef<HTMLInputElement | null>(null);
@@ -41,9 +58,19 @@ export const ParameterSelector = ({
         borderRadius: "10px",
       }}
     >
-      <div style={{ overflowY: "scroll", height: "100%", padding: "5px", scrollbarGutter: 'stable both-edges', display: 'flex', flexDirection: 'column', alignItems:'center' }}>
-        <h1 style={{lineHeight: 1, margin: '10px'}}>Print-A-Drum</h1>
-        <Accordion defaultExpanded sx={{width: '100%'}}>
+      <div
+        style={{
+          overflowY: "scroll",
+          height: "100%",
+          padding: "5px",
+          scrollbarGutter: "stable both-edges",
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
+        }}
+      >
+        <h1 style={{ lineHeight: 1, margin: "10px" }}>Print-A-Drum</h1>
+        <Accordion disableGutters sx={{ width: "100%" }}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel1-content"
@@ -109,7 +136,7 @@ export const ParameterSelector = ({
             />
           </AccordionDetails>
         </Accordion>
-        <Accordion sx={{ width: "100%" }}>
+        <Accordion disableGutters sx={{ width: "100%" }}>
           <AccordionSummary
             expandIcon={<ExpandMoreIcon />}
             aria-controls="panel2-content"
@@ -212,6 +239,151 @@ export const ParameterSelector = ({
               state={lugs}
               setState={setLugs}
             />
+          </AccordionDetails>
+        </Accordion>
+        <Accordion disableGutters sx={{ width: "100%" }}>
+          <AccordionSummary
+            expandIcon={<ExpandMoreIcon />}
+            aria-controls="panel3-content"
+            id="panel3-header"
+          >
+            <strong>Bearing Edge Parameters</strong>
+          </AccordionSummary>
+          <AccordionDetails>
+            <Accordion disableGutters sx={{ width: "100%" }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel4-content"
+                id="panel4-header"
+              >
+                <strong>Top Bearing Edge</strong>
+              </AccordionSummary>
+              <AccordionDetails>
+                <SelectInput
+                  label="Outer Edge Profile"
+                  defaultValue={
+                    bearingEdges.topBearingEdge.outerEdge.profileType
+                  }
+                  values={[
+                    { value: "roundover", displayText: "Roundover" },
+                    { value: "chamfer", displayText: "Chamfer" },
+                    { value: null, displayText: "None" },
+                  ]}
+                  propertyName="topBearingEdge.outerEdge.profileType"
+                  updateState={updateState}
+                  state={bearingEdges}
+                  setState={setBearingEdges}
+                />
+                <NumberInput
+                  label={`Outer ${capitalizeFirstLetter(
+                    bearingEdges.topBearingEdge.outerEdge.profileType
+                  )} Size`}
+                  defaultValue={
+                    bearingEdges.topBearingEdge.outerEdge.profileSize
+                  }
+                  min={0}
+                  max={bearingEdges.topBearingEdge.thickness}
+                  step={1}
+                  propertyName="topBearingEdge.outerEdge.profileSize"
+                  updateState={updateState}
+                  state={bearingEdges}
+                  setState={setBearingEdges}
+                />
+                <SelectInput
+                  label="Inner Edge Profile"
+                  defaultValue={
+                    bearingEdges.topBearingEdge.innerEdge.profileType
+                  }
+                  values={[
+                    { value: "roundover", displayText: "Roundover" },
+                    { value: "chamfer", displayText: "Chamfer" },
+                    { value: null, displayText: "None" },
+                  ]}
+                  propertyName="topBearingEdge.innerEdge.profileType"
+                  updateState={updateState}
+                  state={bearingEdges}
+                  setState={setBearingEdges}
+                />
+                <NumberInput
+                  label="Bearing Edge Thickness"
+                  defaultValue={bearingEdges.topBearingEdge.thickness}
+                  min={shell.shellThickness}
+                  max={25} // TODO calculate this
+                  step={1}
+                  propertyName="topBearingEdge.thickness"
+                  updateState={updateState}
+                  state={bearingEdges}
+                  setState={setBearingEdges}
+                />
+              </AccordionDetails>
+            </Accordion>
+            <Accordion disableGutters sx={{ width: "100%" }}>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="panel4-content"
+                id="panel4-header"
+              >
+                <strong>Bottom Bearing Edge</strong>
+              </AccordionSummary>
+              <AccordionDetails>
+                <SelectInput
+                  label="Outer Edge Profile"
+                  defaultValue={
+                    bearingEdges.bottomBearingEdge.outerEdge.profileType
+                  }
+                  values={[
+                    { value: "roundover", displayText: "Roundover" },
+                    { value: "chamfer", displayText: "Chamfer" },
+                    { value: null, displayText: "None" },
+                  ]}
+                  propertyName="bottomBearingEdge.outerEdge.profileType"
+                  updateState={updateState}
+                  state={bearingEdges}
+                  setState={setBearingEdges}
+                />
+                <NumberInput
+                  label={`Outer ${capitalizeFirstLetter(
+                    bearingEdges.bottomBearingEdge.outerEdge.profileType
+                  )} Size`}
+                  defaultValue={
+                    bearingEdges.bottomBearingEdge.outerEdge.profileSize
+                  }
+                  min={0}
+                  max={bearingEdges.bottomBearingEdge.thickness}
+                  step={1}
+                  propertyName="bottomBearingEdge.outerEdge.profileSize"
+                  updateState={updateState}
+                  state={bearingEdges}
+                  setState={setBearingEdges}
+                />
+                <SelectInput
+                  label="Inner Edge Profile"
+                  defaultValue={
+                    bearingEdges.bottomBearingEdge.innerEdge.profileType
+                  }
+                  values={[
+                    { value: "roundover", displayText: "Roundover" },
+                    { value: "chamfer", displayText: "Chamfer" },
+                    { value: null, displayText: "None" },
+                  ]}
+                  propertyName="bottomBearingEdge.innerEdge.profileType"
+                  updateState={updateState}
+                  state={bearingEdges}
+                  setState={setBearingEdges}
+                />
+                <NumberInput
+                  label="Bearing Edge Thickness"
+                  defaultValue={bearingEdges.bottomBearingEdge.thickness}
+                  min={shell.shellThickness}
+                  max={25} // TODO calculate this
+                  step={1}
+                  propertyName="bottomBearingEdge.thickness"
+                  updateState={updateState}
+                  state={bearingEdges}
+                  setState={setBearingEdges}
+                />
+              </AccordionDetails>
+            </Accordion>
           </AccordionDetails>
         </Accordion>
       </div>
