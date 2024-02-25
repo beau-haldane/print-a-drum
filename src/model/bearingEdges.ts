@@ -6,12 +6,10 @@ export const generateBearingEdges = ({
   shellConstants,
   drum,
   interlockingTabPockets,
-  updateProgress,
 }: {
   shellConstants: ShellConstants;
   drum: Drum;
   interlockingTabPockets: ShapeArray;
-  updateProgress: (number: number) => void;
 }): {
   bearingEdgesTop: WrappedShapeArray;
   bearingEdgesBottom: WrappedShapeArray;
@@ -21,13 +19,9 @@ export const generateBearingEdges = ({
     radius,
     shellSegmentVertexAngle,
     shellSegmentHeight,
-    tabVertexAngle,
-    tabThickness,
-    tabOuterRadius,
-    tabFitmentToleranceDegrees,
     basePlane,
   } = shellConstants;
-  const { fitmentTolerance, bearingEdges } = drum;
+  const { bearingEdges } = drum;
   const { shellThickness } = drum.shell;
   const bearingEdgeVertexAngle =
     shellSegmentVertexAngle * drum.bearingEdges.lugsPerSegment;
@@ -44,28 +38,24 @@ export const generateBearingEdges = ({
       ? topBearingEdge.thickness
       : shellThickness;
 
-  const bottomBearingEdgeBase = generateBearingEdgeSegment(
-    {
-      shellConstants,
-      drum,
-      interlockingTabPockets,
-      bearingEdgeVertexAngle,
-      bearingEdgeThickness: bottomBearingEdgeThickness,
-    }
-  );
+  const bottomBearingEdgeBase = generateBearingEdgeSegment({
+    shellConstants,
+    drum,
+    interlockingTabPockets,
+    bearingEdgeVertexAngle,
+    bearingEdgeThickness: bottomBearingEdgeThickness,
+  });
 
   const topBearingEdgeBase =
     JSON.stringify(topBearingEdge) === JSON.stringify(bottomBearingEdge)
       ? bottomBearingEdgeBase
-      : generateBearingEdgeSegment(
-        {
+      : generateBearingEdgeSegment({
           shellConstants,
           drum,
           interlockingTabPockets,
           bearingEdgeVertexAngle,
           bearingEdgeThickness: topBearingEdgeThickness,
-        }
-        );
+        });
 
   const findEdge = (e, edgeRadius, plane = basePlane) =>
     e.ofCurveType("CIRCLE").atDistance(edgeRadius, [0, 0]).inPlane(plane);

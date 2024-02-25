@@ -52,18 +52,14 @@ const generateShellAssembly = ({
     {
       shellConstants,
       drum,
-      updateProgress,
     }
   );
   updateProgress(0.5);
-  const { bearingEdgesTop, bearingEdgesBottom } = generateBearingEdges(
-    {
-      shellConstants,
-      drum,
-      interlockingTabPockets,
-      updateProgress,
-    }
-  );
+  const { bearingEdgesTop, bearingEdgesBottom } = generateBearingEdges({
+    shellConstants,
+    drum,
+    interlockingTabPockets,
+  });
   updateProgress(0.75);
   const shellSegments = generateShellSegments(
     depth,

@@ -1,17 +1,13 @@
 import { Drum, ShapeArray, ShellConstants, WrappedShapeArray } from "./types";
 import { generateFilletedSegmentBody } from "./utils";
 
-export const generateInterlockingTabs = (
-  {
-    shellConstants,
-    drum,
-    updateProgress,
-  }: {
-    shellConstants: ShellConstants;
-    drum: Drum;
-    updateProgress: (number: number) => void;
-  }
-) => {
+export const generateInterlockingTabs = ({
+  shellConstants,
+  drum,
+}: {
+  shellConstants: ShellConstants;
+  drum: Drum;
+}) => {
   const {
     shellSegmentVertexAngle,
     shellSegmentHeight,
