@@ -1,4 +1,5 @@
-import { Plane, Point2D, Shape3D, Solid, draw, makePlane } from "replicad";
+import { Plane, Point2D, draw } from "replicad";
+import { SolidShape } from "./types";
 
 export const inchesToMillimeters = (inch: number) => inch * 25.4;
 
@@ -32,7 +33,7 @@ export const generateSegmentBody = (
   thickness: number,
   depth: number,
   plane: Plane
-): Solid => {
+) => {
   const segmentBody = draw()
     .movePointerTo(calculateXY(outerRadius, vertexAngle / 2))
     .threePointsArcTo(calculateXY(outerRadius, -vertexAngle / 2), [
@@ -48,7 +49,7 @@ export const generateSegmentBody = (
     .sketchOnPlane(plane)
     .extrude(depth);
 
-  return segmentBody as Solid;
+  return segmentBody as SolidShape;
 };
 
 export const generateFilletedSegmentBody = (
@@ -57,7 +58,7 @@ export const generateFilletedSegmentBody = (
   thickness: number,
   depth: number,
   plane: Plane
-): Solid => {
+) => {
   const segmentBody = draw()
     .movePointerTo(calculateXY(outerRadius, vertexAngle / 2))
     .threePointsArcTo(calculateXY(outerRadius, -vertexAngle / 2), [
@@ -90,7 +91,7 @@ export const generateFilletedSegmentBody = (
     .sketchOnPlane(plane)
     .extrude(depth);
 
-  return segmentBody as Solid;
+  return segmentBody as SolidShape;
 };
 
 function findSideAAndHypotenuse(sideB: number, angleAlpha: number) {
@@ -116,7 +117,7 @@ export const generateChamferCuttingTool = ({
   chamferStartHeight: number;
   chamferUp: boolean;
   edgeInner: boolean;
-}): Shape3D => {
+}) => {
   const { hypotenuse } = findSideAAndHypotenuse(chamferWidth, chamferAngle);
   const cuttingTool = draw()
     .movePointerTo([startRadius, 0])
@@ -131,7 +132,7 @@ export const generateChamferCuttingTool = ({
     .translateZ(chamferUp ? chamferStartHeight : -chamferStartHeight);
 
   if (!chamferUp) {
-    return cuttingTool.mirror("XY", [0, 0]) as Shape3D;
+    return cuttingTool.mirror("XY", [0, 0]) as SolidShape;
   }
-  return cuttingTool as Shape3D;
+  return cuttingTool as SolidShape;
 };

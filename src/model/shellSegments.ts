@@ -6,7 +6,7 @@ import {
   WrappedShapeArray,
 } from "./types";
 import { generateSegmentBody } from "./utils";
-import { Shape3D, drawCircle } from "replicad";
+import { drawCircle } from "replicad";
 
 export const generateShellSegment = ({
   shellConstants,

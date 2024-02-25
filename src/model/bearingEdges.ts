@@ -1,6 +1,6 @@
-import { Drum, ShapeArray, ShellConstants, WrappedShapeArray } from "./types";
+import { Drum, ShapeArray, ShellConstants, SolidShape, WrappedShapeArray } from "./types";
 import { generateChamferCuttingTool, generateSegmentBody } from "./utils";
-import { Compound, Plane, Solid, makePlane } from "replicad";
+import { makePlane } from "replicad";
 
 export const generateBearingEdges = ({
   shellConstants,
@@ -225,7 +225,7 @@ const generateBearingEdgeSegment = ({
   interlockingTabPockets: ShapeArray;
   bearingEdgeVertexAngle: number;
   bearingEdgeThickness: number;
-}): Compound => {
+}) => {
   const {
     basePlane,
     bearingEdgeHeight,
@@ -279,17 +279,16 @@ const generateBearingEdgeSegment = ({
     bearingEdgeTabPlane
   ).rotate(bearingEdgeVertexAngle / 2 - tabVertexAngle / 2);
 
-  const bearingEdgeSegment: Solid = bearingEdgeSegmentBase
+  const bearingEdgeSegment: SolidShape = bearingEdgeSegmentBase
     .fuse(bearingEdgeSegmentTab)
     .cut(bearingEdgeSegmentTabPocket);
 
   const bearingEdgeSegmentWithTabPockets = interlockingTabPockets.reduce(
     (bearingEdgeSegment, tabPocket) => {
-      // @ts-ignore - TODO - fix this
       return bearingEdgeSegment.cut(tabPocket);
     },
     bearingEdgeSegment
   );
 
-  return bearingEdgeSegmentWithTabPockets as Compound;
+  return bearingEdgeSegmentWithTabPockets
 };
