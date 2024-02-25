@@ -35,6 +35,7 @@ export interface DrumShell {
 }
 
 export interface BearingEdges {
+  lugsPerSegment: number;
   topBearingEdge: BearingEdgeProfile;
   bottomBearingEdge: BearingEdgeProfile;
 }
