@@ -46,36 +46,23 @@ const generateShellAssembly = ({
     shellSegmentPlane,
   } = shellConstants;
   const { diameterInches, shellThickness, lugsPerSegment } = drum.shell;
-  const { lugNumber } = drum.lugs
+  const { lugNumber } = drum.lugs;
   updateProgress(0.25);
   const { interlockingTabPockets, interlockingTabs } = generateInterlockingTabs(
-    diameterInches,
-    tabOuterRadius,
-    shellSegmentVertexAngle,
-    tabThickness,
-    interlockingTabHeight,
-    shellSegmentPlane,
-    drum.fitmentTolerance,
-    tabFitmentToleranceDegrees,
-    lugNumber,
-    shellSegmentHeight
+    {
+      shellConstants,
+      drum,
+      updateProgress,
+    }
   );
   updateProgress(0.5);
   const { bearingEdgesTop, bearingEdgesBottom } = generateBearingEdges(
-    shellSegmentVertexAngle,
-    interlockingTabPockets,
-    radius,
-    shellThickness,
-    bearingEdgeHeight,
-    tabOuterRadius,
-    tabVertexAngle,
-    tabThickness,
-    drum.fitmentTolerance,
-    tabFitmentToleranceDegrees,
-    basePlane,
-    shellSegmentHeight,
-    bearingEdgeSegmentCoverage,
-    drum.bearingEdges
+    {
+      shellConstants,
+      drum,
+      interlockingTabPockets,
+      updateProgress,
+    }
   );
   updateProgress(0.75);
   const shellSegments = generateShellSegments(
