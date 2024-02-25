@@ -38,6 +38,7 @@ export default function ReplicadApp() {
     lugHoleDistanceFromEdge: 45,
   });
   const [bearingEdges, setBearingEdges] = useState<BearingEdges>({
+    lugsPerSegment: 2,
     topBearingEdge: {
       thickness: shell.shellThickness,
       outerEdge: {
