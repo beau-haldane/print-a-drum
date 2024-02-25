@@ -12,10 +12,12 @@ export const generateShellSegment = ({
   shellConstants,
   drum,
   interlockingTabPockets,
+  updateProgress,
 }: {
   shellConstants: ShellConstants;
   drum: Drum;
   interlockingTabPockets: ShapeArray;
+  updateProgress: (number: number, message?: string) => void;
 }) => {
   const {
     depth,
@@ -116,6 +118,11 @@ export const generateShellSegment = ({
     shellSegmentPlane
   ).rotate(shellSegmentVertexAngle / 2);
 
+  const shellSegment: SolidShape = shellSegmentBase
+    .fuse(shellSegmentTab)
+    .cut(shellSegmentTabPocket);
+
+  updateProgress(0.5, "Generating lug holes");
   let lugHoles: ShapeArray = [];
   if (lugRows === 1) {
     if (lugType === "singlePoint") {
@@ -142,15 +149,19 @@ export const generateShellSegment = ({
       ];
     }
   }
+
+  updateProgress(0.6, "Cutting lug holes and tab pockets");
   const cutOperations: ShapeArray = [...interlockingTabPockets, ...lugHoles];
-
-  const shellSegment: SolidShape = shellSegmentBase
-    .fuse(shellSegmentTab)
-    .cut(shellSegmentTabPocket);
-
-  const shellSegmentFinal = cutOperations.reduce((shellSegment, operation) => {
-    return shellSegment.cut(operation);
-  }, shellSegment);
+  const { shellSegment: shellSegmentFinal } = cutOperations.reduce(
+    ({shellSegment, progress}, operation, i) => {
+      const segment = shellSegment.cut(operation);
+      progress = progress + ((i + 1) / cutOperations.length * 0.4)
+      updateProgress(progress);
+      
+      return { shellSegment: segment, progress: 0.6 };
+    },
+    { shellSegment: shellSegment, progress: 0.6 }
+  );
 
   return shellSegmentFinal;
 };
@@ -159,20 +170,24 @@ export const generateShellSegments = ({
   shellConstants,
   drum,
   interlockingTabPockets,
+  updateProgress,
 }: {
   shellConstants: ShellConstants;
   drum: Drum;
   interlockingTabPockets: ShapeArray;
+  updateProgress: (number: number, message?: string) => void;
 }) => {
   const { lugsPerSegment } = drum.shell;
   shellConstants.shellSegmentVertexAngle =
     shellConstants.shellSegmentVertexAngle * lugsPerSegment;
   const { shellSegmentVertexAngle } = shellConstants;
 
+  updateProgress(0.4, "Generating base shell segment");
   const shellSegment = generateShellSegment({
     shellConstants,
     drum,
     interlockingTabPockets,
+    updateProgress,
   });
   const shellSegments: WrappedShapeArray = [];
   for (let i = 0; i < 360 / shellSegmentVertexAngle; i++) {

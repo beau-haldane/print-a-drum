@@ -58,24 +58,9 @@ function createAssembly(
             shape,
             color,
             strokeType,
-            opacity,
-            highlight: inputHighlight,
-            highlightEdge,
-            highlightFace,
+            opacity
           }) => {
-            let highlight =
-              inputHighlight ||
-              (highlightEdge && highlightEdge(new replicad.EdgeFinder())) ||
-              (highlightFace && highlightFace(new replicad.FaceFinder()));
-
             const shapeInfo = { name, color, strokeType, opacity };
-
-            if (isBlueprintLike(shape)) {
-              shapeInfo.format = "svg";
-              shapeInfo.paths = shape.toSVGPaths();
-              shapeInfo.viewbox = shape.toSVGViewBox();
-              return shapeInfo;
-            }
 
             try {
               shapeInfo.mesh = shape.mesh({
@@ -88,15 +73,6 @@ function createAssembly(
               shapeInfo.error = true;
               return shapeInfo;
             }
-
-            if (highlight)
-              try {
-                shapeInfo.highlight = highlight.find(shape).map((s) => {
-                  return s.hashCode;
-                });
-              } catch (e) {
-                console.error(e);
-              }
 
             return shapeInfo;
           }
