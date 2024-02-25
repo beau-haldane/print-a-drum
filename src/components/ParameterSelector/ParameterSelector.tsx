@@ -23,11 +23,11 @@ export const ParameterSelector = ({
 }) => {
   const updateState = (state, setState, value, propertyName) => {
     function setPropertyValue(obj: {}, path: string, value: any) {
-      var schema = obj;
-      var pList = path.split(".");
-      var len = pList.length;
-      for (var i = 0; i < len - 1; i++) {
-        var elem = pList[i];
+      let schema = obj;
+      const pList = path.split(".");
+      const len = pList.length;
+      for (let i = 0; i < len - 1; i++) {
+        const elem = pList[i];
         schema = schema[elem];
       }
 

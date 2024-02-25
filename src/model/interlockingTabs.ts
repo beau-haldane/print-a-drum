@@ -1,19 +1,25 @@
-import { Plane } from "replicad";
-import { ShapeArray, WrappedShapeArray } from "./types";
+import { Drum, ShapeArray, ShellConstants, WrappedShapeArray } from "./types";
 import { generateFilletedSegmentBody } from "./utils";
 
-export const generateInterlockingTabs = (
-  diameterInches: number,
-  tabOuterRadius: number,
-  shellSegmentVertexAngle: number,
-  tabThickness: number,
-  interlockingTabHeight: number,
-  shellSegmentPlane: Plane,
-  fitmentTolerance: number,
-  tabFitmentToleranceDegrees: number,
-  lugs: number,
-  shellSegmentHeight: number
-) => {
+export const generateInterlockingTabs = ({
+  shellConstants,
+  drum,
+}: {
+  shellConstants: ShellConstants;
+  drum: Drum;
+}) => {
+  const {
+    shellSegmentVertexAngle,
+    shellSegmentHeight,
+    tabThickness,
+    tabOuterRadius,
+    tabFitmentToleranceDegrees,
+    interlockingTabHeight,
+    shellSegmentPlane,
+  } = shellConstants;
+  const { fitmentTolerance } = drum;
+  const { lugNumber } = drum.lugs;
+  const { diameterInches } = drum.shell;
   const tabsPerSegment = diameterInches >= 12 ? 2 : 1;
 
   // Generate Tabs
@@ -38,7 +44,7 @@ export const generateInterlockingTabs = (
     interlockingTabs: WrappedShapeArray;
     interlockingTabPockets: ShapeArray;
   } = { interlockingTabs: [], interlockingTabPockets: [] };
-  for (let i = 0; i < lugs * tabsPerSegment; i++) {
+  for (let i = 0; i < lugNumber * tabsPerSegment; i++) {
     const rotationOffset =
       tabsPerSegment > 1 ? -shellSegmentVertexAngle / (tabsPerSegment * 2) : 0;
     const rotationAngle =

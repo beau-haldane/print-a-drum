@@ -1,122 +1,66 @@
-import { BearingEdges, ShapeArray, WrappedShapeArray } from "./types";
+import { Drum, ShapeArray, ShellConstants, WrappedShapeArray } from "./types";
 import { generateChamferCuttingTool, generateSegmentBody } from "./utils";
 import { Compound, Plane, Solid, makePlane } from "replicad";
 
-export const generateBearingEdges = (
-  shellSegmentVertexAngle: number,
-  interlockingTabPockets: ShapeArray,
-  radius: number,
-  thickness: number,
-  bearingEdgeHeight: number,
-  tabOuterRadius: number,
-  tabVertexAngle: number,
-  tabThickness: number,
-  fitmentTolerance: number,
-  tabFitmentToleranceDegrees: number,
-  basePlane: Plane,
-  shellSegmentHeight: number,
-  segmentCoverage = 2,
-  bearingEdgeParameters: BearingEdges
-): {
+export const generateBearingEdges = ({
+  shellConstants,
+  drum,
+  interlockingTabPockets,
+}: {
+  shellConstants: ShellConstants;
+  drum: Drum;
+  interlockingTabPockets: ShapeArray;
+}): {
   bearingEdgesTop: WrappedShapeArray;
   bearingEdgesBottom: WrappedShapeArray;
 } => {
-  const bearingEdgeVertexAngle = shellSegmentVertexAngle * segmentCoverage;
-  const generateBearingEdgeSegment = (
-    interlockingTabPockets: ShapeArray,
-    plane: Plane,
-    bearingEdgeThickness: number
-  ): Compound => {
-    let bearingEdgeSegmentBase = generateSegmentBody(
-      radius,
-      bearingEdgeVertexAngle,
-      bearingEdgeThickness,
-      bearingEdgeHeight,
-      plane
-    );
+  const {
+    bearingEdgeHeight,
+    radius,
+    shellSegmentVertexAngle,
+    shellSegmentHeight,
+    basePlane,
+  } = shellConstants;
+  const { bearingEdges } = drum;
+  const { shellThickness } = drum.shell;
+  const bearingEdgeVertexAngle =
+    shellSegmentVertexAngle * drum.bearingEdges.lugsPerSegment;
 
-    if (bearingEdgeThickness > thickness) {
-      const cuttingTool = generateChamferCuttingTool({
-        plane: makePlane("XZ"),
-        startRadius:
-          radius - thickness,
-        chamferAngle: 30,
-        chamferWidth:
-          bearingEdgeThickness - thickness,
-        chamferStartHeight: bearingEdgeHeight,
-        chamferUp: false,
-        edgeInner: true,
-      });
-      bearingEdgeSegmentBase = bearingEdgeSegmentBase.cut(cuttingTool)
-    }
-
-    const bearingEdgeTabHeight = bearingEdgeHeight - 10;
-    const bearingEdgeTabPlane = makePlane(
-      "XY",
-      bearingEdgeHeight - bearingEdgeTabHeight
-    );
-    const bearingEdgeSegmentTab = generateSegmentBody(
-      tabOuterRadius,
-      tabVertexAngle,
-      tabThickness,
-      bearingEdgeTabHeight,
-      bearingEdgeTabPlane
-    ).rotate(-(bearingEdgeVertexAngle / 2 + tabVertexAngle / 2));
-
-    const bearingEdgeSegmentTabPocket = generateSegmentBody(
-      tabOuterRadius + fitmentTolerance,
-      tabVertexAngle + tabFitmentToleranceDegrees * 2,
-      tabThickness + fitmentTolerance * 2,
-      bearingEdgeTabHeight,
-      bearingEdgeTabPlane
-    ).rotate(bearingEdgeVertexAngle / 2 - tabVertexAngle / 2);
-
-    const bearingEdgeSegment: Solid = bearingEdgeSegmentBase
-      .fuse(bearingEdgeSegmentTab)
-      .cut(bearingEdgeSegmentTabPocket);
-
-    const bearingEdgeSegmentWithTabPockets = interlockingTabPockets.reduce(
-      (bearingEdgeSegment, tabPocket) => {
-        // @ts-ignore - TODO - fix this
-        return bearingEdgeSegment.cut(tabPocket);
-      },
-      bearingEdgeSegment
-    );
-
-    return bearingEdgeSegmentWithTabPockets as Compound;
-  };
-
-  const { topBearingEdge, bottomBearingEdge } = bearingEdgeParameters;
+  const { topBearingEdge, bottomBearingEdge } = bearingEdges;
 
   const bottomBearingEdgeThickness =
-    bottomBearingEdge.thickness && bottomBearingEdge.thickness > thickness
+    bottomBearingEdge.thickness && bottomBearingEdge.thickness > shellThickness
       ? bottomBearingEdge.thickness
-      : thickness;
+      : shellThickness;
 
   const topBearingEdgeThickness =
-    topBearingEdge.thickness && topBearingEdge.thickness > thickness
+    topBearingEdge.thickness && topBearingEdge.thickness > shellThickness
       ? topBearingEdge.thickness
-      : thickness;
+      : shellThickness;
 
-  const bottomBearingEdgeBase = generateBearingEdgeSegment(
+  const bottomBearingEdgeBase = generateBearingEdgeSegment({
+    shellConstants,
+    drum,
     interlockingTabPockets,
-    basePlane,
-    bottomBearingEdgeThickness
-  );
+    bearingEdgeVertexAngle,
+    bearingEdgeThickness: bottomBearingEdgeThickness,
+  });
 
   const topBearingEdgeBase =
     JSON.stringify(topBearingEdge) === JSON.stringify(bottomBearingEdge)
       ? bottomBearingEdgeBase
-      : generateBearingEdgeSegment(
+      : generateBearingEdgeSegment({
+          shellConstants,
+          drum,
           interlockingTabPockets,
-          basePlane,
-          topBearingEdgeThickness
-        );
+          bearingEdgeVertexAngle,
+          bearingEdgeThickness: topBearingEdgeThickness,
+        });
 
   const findEdge = (e, edgeRadius, plane = basePlane) =>
     e.ofCurveType("CIRCLE").atDistance(edgeRadius, [0, 0]).inPlane(plane);
 
-  const bearingEdges: {
+  const bearingEdgeModels: {
     bearingEdgesTop: WrappedShapeArray;
     bearingEdgesBottom: WrappedShapeArray;
     cuttingTool: WrappedShapeArray;
@@ -139,19 +83,17 @@ export const generateBearingEdges = (
         topOuterEdge.profileSize - 0.01,
         (e) => findEdge(e, radius)
       );
-    }else if (
+    } else if (
       topOuterEdge.profileType === "customChamfer" &&
       topOuterEdge.customChamferAngle
     ) {
       const cuttingTool = generateChamferCuttingTool({
         plane: makePlane("XZ"),
-        startRadius:
-          radius -
-          bearingEdgeParameters.topBearingEdge.outerEdge.profileSize,
+        startRadius: radius - bearingEdges.topBearingEdge.outerEdge.profileSize,
         chamferAngle: topOuterEdge.customChamferAngle,
         chamferWidth:
           topBearingEdge.thickness -
-          bearingEdgeParameters.topBearingEdge.outerEdge.profileSize,
+          bearingEdges.topBearingEdge.outerEdge.profileSize,
         chamferStartHeight: 0,
         chamferUp: true,
         edgeInner: false,
@@ -176,13 +118,11 @@ export const generateBearingEdges = (
     ) {
       const cuttingTool = generateChamferCuttingTool({
         plane: makePlane("XZ"),
-        startRadius:
-          radius -
-          bearingEdgeParameters.topBearingEdge.outerEdge.profileSize,
+        startRadius: radius - bearingEdges.topBearingEdge.outerEdge.profileSize,
         chamferAngle: topInnerEdge.customChamferAngle,
         chamferWidth:
           topBearingEdge.thickness -
-          bearingEdgeParameters.topBearingEdge.outerEdge.profileSize,
+          bearingEdges.topBearingEdge.outerEdge.profileSize,
         chamferStartHeight: 0,
         chamferUp: true,
         edgeInner: true,
@@ -191,7 +131,7 @@ export const generateBearingEdges = (
       topBearingEdgeProcessed = topBearingEdgeProcessed.cut(cuttingTool);
     }
 
-    bearingEdges.bearingEdgesTop.push({
+    bearingEdgeModels.bearingEdgesTop.push({
       shape: topBearingEdgeProcessed
         .mirror("XY", [0, 0])
         .translateZ(shellSegmentHeight + bearingEdgeHeight * 2),
@@ -212,7 +152,7 @@ export const generateBearingEdges = (
       );
     } else if (bottomOuterEdge.profileType === "chamfer") {
       bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.chamfer(
-        bottomOuterEdge.profileSize  - 0.01,
+        bottomOuterEdge.profileSize - 0.01,
         (e) => findEdge(e, radius)
       );
     } else if (
@@ -222,12 +162,11 @@ export const generateBearingEdges = (
       const cuttingTool = generateChamferCuttingTool({
         plane: makePlane("XZ"),
         startRadius:
-          radius -
-          bearingEdgeParameters.bottomBearingEdge.outerEdge.profileSize,
+          radius - bearingEdges.bottomBearingEdge.outerEdge.profileSize,
         chamferAngle: bottomOuterEdge.customChamferAngle,
         chamferWidth:
           bottomBearingEdge.thickness -
-          bearingEdgeParameters.bottomBearingEdge.outerEdge.profileSize,
+          bearingEdges.bottomBearingEdge.outerEdge.profileSize,
         chamferStartHeight: 0,
         chamferUp: true,
         edgeInner: false,
@@ -253,12 +192,11 @@ export const generateBearingEdges = (
       const cuttingTool = generateChamferCuttingTool({
         plane: makePlane("XZ"),
         startRadius:
-          radius -
-          bearingEdgeParameters.bottomBearingEdge.outerEdge.profileSize,
+          radius - bearingEdges.bottomBearingEdge.outerEdge.profileSize,
         chamferAngle: bottomInnerEdge.customChamferAngle,
         chamferWidth:
           bottomBearingEdge.thickness -
-          bearingEdgeParameters.bottomBearingEdge.outerEdge.profileSize,
+          bearingEdges.bottomBearingEdge.outerEdge.profileSize,
         chamferStartHeight: 0,
         chamferUp: true,
         edgeInner: true,
@@ -266,11 +204,92 @@ export const generateBearingEdges = (
 
       bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.cut(cuttingTool);
     }
-    bearingEdges.bearingEdgesBottom.push({
+    bearingEdgeModels.bearingEdgesBottom.push({
       shape: bottomBearingEdgeProcessed,
       name: `Bearing Edge Bottom ${i + 1}`,
     });
   }
 
-  return bearingEdges;
+  return bearingEdgeModels;
+};
+
+const generateBearingEdgeSegment = ({
+  shellConstants,
+  drum,
+  interlockingTabPockets,
+  bearingEdgeVertexAngle,
+  bearingEdgeThickness,
+}: {
+  shellConstants: ShellConstants;
+  drum: Drum;
+  interlockingTabPockets: ShapeArray;
+  bearingEdgeVertexAngle: number;
+  bearingEdgeThickness: number;
+}): Compound => {
+  const {
+    basePlane,
+    bearingEdgeHeight,
+    radius,
+    tabVertexAngle,
+    tabThickness,
+    tabOuterRadius,
+    tabFitmentToleranceDegrees,
+  } = shellConstants;
+  const { fitmentTolerance } = drum;
+  const { shellThickness } = drum.shell;
+  let bearingEdgeSegmentBase = generateSegmentBody(
+    radius,
+    bearingEdgeVertexAngle,
+    bearingEdgeThickness,
+    bearingEdgeHeight,
+    basePlane
+  );
+
+  if (bearingEdgeThickness > shellThickness) {
+    const cuttingTool = generateChamferCuttingTool({
+      plane: makePlane("XZ"),
+      startRadius: radius - shellThickness,
+      chamferAngle: 30,
+      chamferWidth: bearingEdgeThickness - shellThickness,
+      chamferStartHeight: bearingEdgeHeight,
+      chamferUp: false,
+      edgeInner: true,
+    });
+    bearingEdgeSegmentBase = bearingEdgeSegmentBase.cut(cuttingTool);
+  }
+
+  const bearingEdgeTabHeight = bearingEdgeHeight - 10;
+  const bearingEdgeTabPlane = makePlane(
+    "XY",
+    bearingEdgeHeight - bearingEdgeTabHeight
+  );
+  const bearingEdgeSegmentTab = generateSegmentBody(
+    tabOuterRadius,
+    tabVertexAngle,
+    tabThickness,
+    bearingEdgeTabHeight,
+    bearingEdgeTabPlane
+  ).rotate(-(bearingEdgeVertexAngle / 2 + tabVertexAngle / 2));
+
+  const bearingEdgeSegmentTabPocket = generateSegmentBody(
+    tabOuterRadius + fitmentTolerance,
+    tabVertexAngle + tabFitmentToleranceDegrees * 2,
+    tabThickness + fitmentTolerance * 2,
+    bearingEdgeTabHeight,
+    bearingEdgeTabPlane
+  ).rotate(bearingEdgeVertexAngle / 2 - tabVertexAngle / 2);
+
+  const bearingEdgeSegment: Solid = bearingEdgeSegmentBase
+    .fuse(bearingEdgeSegmentTab)
+    .cut(bearingEdgeSegmentTabPocket);
+
+  const bearingEdgeSegmentWithTabPockets = interlockingTabPockets.reduce(
+    (bearingEdgeSegment, tabPocket) => {
+      // @ts-ignore - TODO - fix this
+      return bearingEdgeSegment.cut(tabPocket);
+    },
+    bearingEdgeSegment
+  );
+
+  return bearingEdgeSegmentWithTabPockets as Compound;
 };
