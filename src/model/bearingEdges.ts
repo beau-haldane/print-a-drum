@@ -6,10 +6,12 @@ export const generateBearingEdges = ({
   shellConstants,
   drum,
   interlockingTabPockets,
+  updateProgress,
 }: {
   shellConstants: ShellConstants;
   drum: Drum;
   interlockingTabPockets: ShapeArray;
+  updateProgress: (number: number, message?: string) => void;
 }): {
   bearingEdgesTop: WrappedShapeArray;
   bearingEdgesBottom: WrappedShapeArray;
@@ -38,6 +40,8 @@ export const generateBearingEdges = ({
       ? topBearingEdge.thickness
       : shellThickness;
 
+  updateProgress(0.25, "Generating base bearing edge segments");
+  
   const bottomBearingEdgeBase = generateBearingEdgeSegment({
     shellConstants,
     drum,
@@ -63,8 +67,9 @@ export const generateBearingEdges = ({
   const bearingEdgeModels: {
     bearingEdgesTop: WrappedShapeArray;
     bearingEdgesBottom: WrappedShapeArray;
-    cuttingTool: WrappedShapeArray;
-  } = { bearingEdgesTop: [], bearingEdgesBottom: [], cuttingTool: [] };
+  } = { bearingEdgesTop: [], bearingEdgesBottom: [] };
+
+  updateProgress(0.3, "Duplicating bearing edge segments and cut bearing edges");
 
   for (let i = 0; i < 360 / bearingEdgeVertexAngle; i++) {
     // Top Edges
