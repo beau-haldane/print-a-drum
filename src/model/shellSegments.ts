@@ -1,24 +1,38 @@
-import { Lugs, ShapeArray, WrappedShapeArray } from "./types";
+import {
+  Drum,
+  ShapeArray,
+  ShellConstants,
+  SolidShape,
+  WrappedShapeArray,
+} from "./types";
 import { generateSegmentBody } from "./utils";
-import { Compound, Shape3D, Plane, Vertex, drawCircle } from "replicad";
+import { Shape3D, drawCircle } from "replicad";
 
 export const generateShellSegment = (
-  depth: number,
-  radius: number,
-  shellSegmentVertexAngle: number,
-  thickness: number,
-  shellSegmentHeight: number,
-  shellSegmentPlane: Plane,
-  tabOuterRadius: number,
-  tabVertexAngle: number,
-  tabThickness: number,
-  fitmentTolerance: number,
-  tabFitmentToleranceDegrees: number,
-  shellCenterPoint: number,
-  interlockingTabPockets,
-  lugs: Lugs,
-  lugsPerSegment: number
+  {
+    shellConstants,
+    drum,
+    interlockingTabPockets,
+  }: {
+    shellConstants: ShellConstants;
+    drum: Drum;
+    interlockingTabPockets: ShapeArray;
+  }
 ) => {
+  const {
+    depth,
+    radius,
+    shellSegmentHeight,
+    shellCenterPoint,
+    tabVertexAngle,
+    tabThickness,
+    tabOuterRadius,
+    tabFitmentToleranceDegrees,
+    shellSegmentPlane,
+  } = shellConstants;
+  let { shellSegmentVertexAngle } = shellConstants;
+  const { fitmentTolerance, lugs } = drum;
+  const { shellThickness, lugsPerSegment } = drum.shell;
   const {
     lugType,
     lugRows,
@@ -32,16 +46,16 @@ export const generateShellSegment = (
   const generateLugHoles = (lugsPerSegment, lugHolesDistance = 0) => {
     let lugHole = drawCircle(lugHoleDiameter / 2)
       .sketchOnPlane("XZ", -radius)
-      .extrude(thickness + 10) as Shape3D;
+      .extrude(shellThickness + 10) as SolidShape;
 
     if (lugHolePocketDiameter && lugHolePocketDepth) {
       const lugHolePocket = drawCircle(lugHolePocketDiameter / 2)
         .sketchOnPlane("XZ", -radius)
-        .extrude(lugHolePocketDepth) as Shape3D;
+        .extrude(lugHolePocketDepth) as SolidShape;
       lugHole = lugHole.fuse(lugHolePocket);
     }
 
-    const lugHoles: Shape3D[] = [];
+    const lugHoles: SolidShape[] = [];
     for (let i = 0; i < (lugHolesDistance ? 2 : 4); i++) {
       lugHoles.push(
         lugHole
@@ -85,7 +99,7 @@ export const generateShellSegment = (
   const shellSegmentBase = generateSegmentBody(
     radius,
     shellSegmentVertexAngle,
-    thickness,
+    shellThickness,
     shellSegmentHeight,
     shellSegmentPlane
   ).rotate(tabVertexAngle / 2);
@@ -130,9 +144,9 @@ export const generateShellSegment = (
       ];
     }
   }
-  const cutOperations = [...interlockingTabPockets, ...lugHoles];
+  const cutOperations: ShapeArray = [...interlockingTabPockets, ...lugHoles];
 
-  const shellSegment: Compound = shellSegmentBase
+  const shellSegment: SolidShape = shellSegmentBase
     .fuse(shellSegmentTab)
     .cut(shellSegmentTabPocket);
 
@@ -143,40 +157,25 @@ export const generateShellSegment = (
   return shellSegmentFinal;
 };
 
-export const generateShellSegments = (
-  depth: number,
-  radius: number,
-  shellSegmentVertexAngle: number,
-  thickness: number,
-  shellSegmentHeight: number,
-  shellSegmentPlane: Plane,
-  tabOuterRadius: number,
-  tabVertexAngle: number,
-  tabThickness: number,
-  fitmentTolerance: number,
-  tabFitmentToleranceDegrees: number,
-  shellCenterPoint: number,
-  interlockingTabPockets: ShapeArray,
-  lugs: Lugs,
-  lugsPerSegment: number
-) => {
+export const generateShellSegments = ({
+  shellConstants,
+  drum,
+  interlockingTabPockets,
+}: {
+  shellConstants: ShellConstants;
+  drum: Drum;
+  interlockingTabPockets: ShapeArray;
+}) => {
+  let { shellSegmentVertexAngle } = shellConstants;
+  const { lugsPerSegment } = drum.shell;
+
   shellSegmentVertexAngle = shellSegmentVertexAngle * lugsPerSegment;
   const shellSegment = generateShellSegment(
-    depth,
-    radius,
-    shellSegmentVertexAngle,
-    thickness,
-    shellSegmentHeight,
-    shellSegmentPlane,
-    tabOuterRadius,
-    tabVertexAngle,
-    tabThickness,
-    fitmentTolerance,
-    tabFitmentToleranceDegrees,
-    shellCenterPoint,
-    interlockingTabPockets,
-    lugs,
-    lugsPerSegment
+    {
+      shellConstants,
+      drum,
+      interlockingTabPockets,
+    }
   );
   const shellSegments: WrappedShapeArray = [];
   for (let i = 0; i < 360 / shellSegmentVertexAngle; i++) {
