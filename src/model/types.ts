@@ -3,6 +3,7 @@ import {
   Compound,
   Edge,
   Face,
+  Plane,
   Shape,
   Shell,
   Solid,
@@ -40,11 +41,15 @@ export interface BearingEdges {
 
 export interface BearingEdgeProfile {
   thickness: number;
-  outerEdge: { profileType: ProfileType; profileSize: number, customChamferAngle?: number };
-  innerEdge: { profileType: ProfileType, customChamferAngle?: number };
+  outerEdge: {
+    profileType: ProfileType;
+    profileSize: number;
+    customChamferAngle?: number;
+  };
+  innerEdge: { profileType: ProfileType; customChamferAngle?: number };
 }
 
-export type ProfileType = "roundover" | "chamfer" | 'customChamfer' | 'none';
+export type ProfileType = "roundover" | "chamfer" | "customChamfer" | "none";
 
 export interface Lugs {
   lugType: "singlePoint" | "doublePoint";
@@ -56,3 +61,25 @@ export interface Lugs {
   lugHolePocketDepth: number;
   lugHoleDistanceFromEdge?: number;
 }
+
+export type ShellConstants = {
+  bearingEdgeHeight: number;
+  bearingEdgeSegmentCoverage: number;
+  depth: number;
+  radius: number;
+  shellSegmentVertexAngle: number;
+  shellSegmentHeight: number;
+  shellCenterPoint: number;
+  tabWidth: number;
+  tabVertexAngle: number;
+  tabThickness: number;
+  tabOuterRadius: number;
+  tabFitmentToleranceDegrees: number;
+  interlockingTabHeight: number;
+  diameterInches: number;
+  shellThickness: number;
+  fitmentTolerance: number;
+  lugNumber: number;
+  basePlane: Plane;
+  shellSegmentPlane: Plane;
+};
