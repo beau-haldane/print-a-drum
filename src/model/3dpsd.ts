@@ -29,24 +29,6 @@ const generateShellAssembly = ({
   drum: Drum;
   updateProgress: (number: number) => void;
 }) => {
-  const {
-    bearingEdgeHeight,
-    bearingEdgeSegmentCoverage,
-    depth,
-    radius,
-    shellSegmentVertexAngle,
-    shellSegmentHeight,
-    shellCenterPoint,
-    tabVertexAngle,
-    tabThickness,
-    tabOuterRadius,
-    tabFitmentToleranceDegrees,
-    interlockingTabHeight,
-    basePlane,
-    shellSegmentPlane,
-  } = shellConstants;
-  const { diameterInches, shellThickness, lugsPerSegment } = drum.shell;
-  const { lugNumber } = drum.lugs;
   updateProgress(0.25);
   const { interlockingTabPockets, interlockingTabs } = generateInterlockingTabs(
     {
@@ -61,23 +43,11 @@ const generateShellAssembly = ({
     interlockingTabPockets,
   });
   updateProgress(0.75);
-  const shellSegments = generateShellSegments(
-    depth,
-    radius,
-    shellSegmentVertexAngle,
-    shellThickness,
-    shellSegmentHeight,
-    shellSegmentPlane,
-    tabOuterRadius,
-    tabVertexAngle,
-    tabThickness,
-    drum.fitmentTolerance,
-    tabFitmentToleranceDegrees,
-    shellCenterPoint,
+  const shellSegments = generateShellSegments({
+    shellConstants,
+    drum,
     interlockingTabPockets,
-    drum.lugs,
-    lugsPerSegment
-  );
+  });
   updateProgress(1);
 
   return [
