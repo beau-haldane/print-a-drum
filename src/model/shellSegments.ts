@@ -8,17 +8,15 @@ import {
 import { generateSegmentBody } from "./utils";
 import { Shape3D, drawCircle } from "replicad";
 
-export const generateShellSegment = (
-  {
-    shellConstants,
-    drum,
-    interlockingTabPockets,
-  }: {
-    shellConstants: ShellConstants;
-    drum: Drum;
-    interlockingTabPockets: ShapeArray;
-  }
-) => {
+export const generateShellSegment = ({
+  shellConstants,
+  drum,
+  interlockingTabPockets,
+}: {
+  shellConstants: ShellConstants;
+  drum: Drum;
+  interlockingTabPockets: ShapeArray;
+}) => {
   const {
     depth,
     radius,
@@ -166,17 +164,16 @@ export const generateShellSegments = ({
   drum: Drum;
   interlockingTabPockets: ShapeArray;
 }) => {
-  let { shellSegmentVertexAngle } = shellConstants;
   const { lugsPerSegment } = drum.shell;
+  shellConstants.shellSegmentVertexAngle =
+    shellConstants.shellSegmentVertexAngle * lugsPerSegment;
+  const { shellSegmentVertexAngle } = shellConstants;
 
-  shellSegmentVertexAngle = shellSegmentVertexAngle * lugsPerSegment;
-  const shellSegment = generateShellSegment(
-    {
-      shellConstants,
-      drum,
-      interlockingTabPockets,
-    }
-  );
+  const shellSegment = generateShellSegment({
+    shellConstants,
+    drum,
+    interlockingTabPockets,
+  });
   const shellSegments: WrappedShapeArray = [];
   for (let i = 0; i < 360 / shellSegmentVertexAngle; i++) {
     if (lugsPerSegment === 1) {
