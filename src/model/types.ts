@@ -11,12 +11,16 @@ import {
   Wire,
 } from "replicad";
 
-export type ShapeArray = Array<
-  Shell | Solid | CompSolid | Compound | Vertex | Edge | Wire | Face
->;
+export type SolidShape =
+  | Shell
+  | Solid
+  | CompSolid
+  | Compound
+
+export type ShapeArray = Array<SolidShape>;
 
 export type WrappedShapeArray = Array<{
-  shape: Shell | Solid | CompSolid | Compound | Vertex | Edge | Wire | Face;
+  shape: SolidShape;
   name: string;
 }>;
 
