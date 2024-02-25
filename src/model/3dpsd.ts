@@ -1,100 +1,106 @@
-import { makePlane } from "replicad";
-import { inchesToMillimeters, calculateVertexAngle } from "./utils";
 import { generateShellSegments } from "./shellSegments";
 import { generateInterlockingTabs } from "./interlockingTabs";
 import { generateBearingEdges } from "./bearingEdges";
-import { Drum } from "./types";
+import { Drum, ShellConstants } from "./types";
+import { getShellConstants } from "./constants";
 
-// Drum Generator
 export const generate3DPSD = (
-  { fitmentTolerance, shell, lugs, bearingEdges }: Drum,
+  drum: Drum,
   updateProgress: (number: number) => string
 ) => {
-  const { depthInches, diameterInches, shellThickness, lugsPerSegment } = shell;
-  const { lugNumber } = lugs;
-  // Bearing Edge Constants
-  const bearingEdgeHeight = 30;
-  const bearingEdgeSegmentCoverage = 2;
-  // Shell Constants
-  const depth = inchesToMillimeters(depthInches);
-  const radius = inchesToMillimeters(diameterInches) / 2;
-  const shellSegmentVertexAngle = 360 / lugNumber;
-  const shellSegmentHeight = depth - bearingEdgeHeight * 2;
-  const shellCenterPoint = bearingEdgeHeight + shellSegmentHeight / 2;
-  // Tab Constants
-  const tabWidth = 10;
-  const tabVertexAngle = calculateVertexAngle(radius, tabWidth);
-  const tabThickness = Math.floor(shellThickness / 3);
-  const tabOuterRadius = radius - (shellThickness - tabThickness) / 2;
-  const tabFitmentToleranceDegrees = calculateVertexAngle(
-    radius,
-    fitmentTolerance
+  const { depthInches, diameterInches, shellThickness } = drum.shell;
+  const { lugNumber } = drum.lugs;
+  const shellConstants = getShellConstants(
+    depthInches,
+    diameterInches,
+    lugNumber,
+    shellThickness,
+    drum.fitmentTolerance
   );
-  const interlockingTabHeight = 10;
-  // Planes
-  const basePlane = makePlane("XY", 0);
-  const shellSegmentPlane = makePlane("XY", bearingEdgeHeight);
+  return generateShellAssembly({ shellConstants, drum, updateProgress });
+};
 
-  const generateShellAssembly = () => {
-    updateProgress(0.25);
-    const { interlockingTabPockets, interlockingTabs } =
-      generateInterlockingTabs(
-        diameterInches,
-        tabOuterRadius,
-        shellSegmentVertexAngle,
-        tabThickness,
-        interlockingTabHeight,
-        shellSegmentPlane,
-        fitmentTolerance,
-        tabFitmentToleranceDegrees,
-        lugNumber,
-        shellSegmentHeight
-      );
-    updateProgress(0.5);
-    const { bearingEdgesTop, bearingEdgesBottom } = generateBearingEdges(
-      shellSegmentVertexAngle,
-      interlockingTabPockets,
-      radius,
-      shellThickness,
-      bearingEdgeHeight,
-      tabOuterRadius,
-      tabVertexAngle,
-      tabThickness,
-      fitmentTolerance,
-      tabFitmentToleranceDegrees,
-      basePlane,
-      shellSegmentHeight,
-      bearingEdgeSegmentCoverage,
-      bearingEdges
-    );
-    updateProgress(0.75);
-    const shellSegments = generateShellSegments(
-      depth,
-      radius,
-      shellSegmentVertexAngle,
-      shellThickness,
-      shellSegmentHeight,
-      shellSegmentPlane,
-      tabOuterRadius,
-      tabVertexAngle,
-      tabThickness,
-      fitmentTolerance,
-      tabFitmentToleranceDegrees,
-      shellCenterPoint,
-      interlockingTabPockets,
-      lugs,
-      lugsPerSegment
-    );
-    updateProgress(1);
-      console.log(bearingEdgesTop);
-      
-    return [
-      ...shellSegments,
-      ...interlockingTabs,
-      ...bearingEdgesTop,
-      ...bearingEdgesBottom,
-    ];
-  };
+const generateShellAssembly = ({
+  shellConstants,
+  drum,
+  updateProgress,
+}: {
+  shellConstants: ShellConstants;
+  drum: Drum;
+  updateProgress: (number: number) => void;
+}) => {
+  const {
+    bearingEdgeHeight,
+    bearingEdgeSegmentCoverage,
+    depth,
+    radius,
+    shellSegmentVertexAngle,
+    shellSegmentHeight,
+    shellCenterPoint,
+    tabVertexAngle,
+    tabThickness,
+    tabOuterRadius,
+    tabFitmentToleranceDegrees,
+    interlockingTabHeight,
+    basePlane,
+    shellSegmentPlane,
+  } = shellConstants;
+  const { diameterInches, shellThickness, lugsPerSegment } = drum.shell;
+  const { lugNumber } = drum.lugs
+  updateProgress(0.25);
+  const { interlockingTabPockets, interlockingTabs } = generateInterlockingTabs(
+    diameterInches,
+    tabOuterRadius,
+    shellSegmentVertexAngle,
+    tabThickness,
+    interlockingTabHeight,
+    shellSegmentPlane,
+    drum.fitmentTolerance,
+    tabFitmentToleranceDegrees,
+    lugNumber,
+    shellSegmentHeight
+  );
+  updateProgress(0.5);
+  const { bearingEdgesTop, bearingEdgesBottom } = generateBearingEdges(
+    shellSegmentVertexAngle,
+    interlockingTabPockets,
+    radius,
+    shellThickness,
+    bearingEdgeHeight,
+    tabOuterRadius,
+    tabVertexAngle,
+    tabThickness,
+    drum.fitmentTolerance,
+    tabFitmentToleranceDegrees,
+    basePlane,
+    shellSegmentHeight,
+    bearingEdgeSegmentCoverage,
+    drum.bearingEdges
+  );
+  updateProgress(0.75);
+  const shellSegments = generateShellSegments(
+    depth,
+    radius,
+    shellSegmentVertexAngle,
+    shellThickness,
+    shellSegmentHeight,
+    shellSegmentPlane,
+    tabOuterRadius,
+    tabVertexAngle,
+    tabThickness,
+    drum.fitmentTolerance,
+    tabFitmentToleranceDegrees,
+    shellCenterPoint,
+    interlockingTabPockets,
+    drum.lugs,
+    lugsPerSegment
+  );
+  updateProgress(1);
 
-  return generateShellAssembly();
+  return [
+    ...shellSegments,
+    ...interlockingTabs,
+    ...bearingEdgesTop,
+    ...bearingEdgesBottom,
+  ];
 };
