@@ -1,14 +1,9 @@
 import {
   CompSolid,
   Compound,
-  Edge,
-  Face,
   Plane,
-  Shape,
   Shell,
   Solid,
-  Vertex,
-  Wire,
 } from "replicad";
 
 export type SolidShape =
