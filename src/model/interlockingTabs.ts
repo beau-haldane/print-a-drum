@@ -4,9 +4,11 @@ import { generateFilletedSegmentBody } from "./utils";
 export const generateInterlockingTabs = ({
   shellConstants,
   drum,
+  updateProgress,
 }: {
   shellConstants: ShellConstants;
   drum: Drum;
+  updateProgress: (number: number, message?: string) => void;
 }) => {
   const {
     shellSegmentVertexAngle,
@@ -39,6 +41,7 @@ export const generateInterlockingTabs = ({
     shellSegmentPlane
   );
 
+  updateProgress(0.15, 'Positioning tabs')
   // Generate Interlocking Tabs
   const tabsAndPockets: {
     interlockingTabs: WrappedShapeArray;

@@ -20,7 +20,13 @@ function convertToPercentage(number) {
 export default function ReplicadApp() {
   const [loading, setLoading] = useState(true);
   const [model, setModel] = useState(null);
-  const [modelProgress, setModelProgress] = useState("0%");
+  const [modelProgress, setModelProgress] = useState<{
+    progress: number;
+    messages: string[];
+  }>({
+    progress: 0,
+    messages: [],
+  });
   const [shell, setShell] = useState<DrumShell>({
     diameterInches: 14,
     depthInches: 6.5,
@@ -44,11 +50,11 @@ export default function ReplicadApp() {
       outerEdge: {
         profileType: "roundover",
         profileSize: shell.shellThickness / 2,
-        customChamferAngle: 0
+        customChamferAngle: 0,
       },
       innerEdge: {
         profileType: "chamfer",
-        customChamferAngle: 0
+        customChamferAngle: 0,
       },
     },
     bottomBearingEdge: {
@@ -56,11 +62,11 @@ export default function ReplicadApp() {
       outerEdge: {
         profileType: "roundover",
         profileSize: shell.shellThickness / 2,
-        customChamferAngle: 0
+        customChamferAngle: 0,
       },
       innerEdge: {
         profileType: "chamfer",
-        customChamferAngle: 0
+        customChamferAngle: 0,
       },
     },
   });
@@ -71,15 +77,21 @@ export default function ReplicadApp() {
     bearingEdges,
   });
 
-  const updateModelProgress = (number) => {
-    setModelProgress(convertToPercentage(number));
+  const updateModelProgress = (progress: number, message?: string) => {
+    const modelProgressState = { ...modelProgress };
+    modelProgressState.progress = progress;
+    if (message) modelProgressState.messages.push(message);
+    setModelProgress(modelProgressState);
   };
   const updateModel = (model) => {
     setModel(model);
   };
 
   const generateModel = () => {
-    setModelProgress("0%");
+    setModelProgress({
+      progress: 0,
+      messages: [],
+    });
     setLoading(true);
     cad // @ts-expect-error - see TODO on line 1
       .createAssembly(
@@ -133,7 +145,7 @@ export default function ReplicadApp() {
               alignItems: "center",
               justifyContent: "center",
               fontSize: "2em",
-              // background: "rgb(250, 250, 250)",
+              fontFamily: "Roboto",
               background: `radial-gradient(
                   circle,
                   rgba(250, 250, 250, 1) 0%,
@@ -141,7 +153,21 @@ export default function ReplicadApp() {
                 )`,
             }}
           >
-            <span>{`Generating Drum Shell Model ${modelProgress}`}</span>
+            <span>{`Generating Drum Shell Model ${convertToPercentage(
+              modelProgress.progress
+            )}`}</span>
+            {modelProgress.messages.map((message, i) => {
+              const latestMessage = i + 1 === modelProgress.messages.length
+              return (
+              <p
+                style={{
+                  fontSize: "0.5em",
+                  margin: 0
+                }}
+              >
+                {message}{latestMessage ? '...' : ' ✔️'}
+              </p>
+            )})}
           </div>
         )}
       </section>

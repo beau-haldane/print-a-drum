@@ -27,26 +27,29 @@ const generateShellAssembly = ({
 }: {
   shellConstants: ShellConstants;
   drum: Drum;
-  updateProgress: (number: number) => void;
+  updateProgress: (number: number, message?: string) => void;
 }) => {
-  updateProgress(0.25);
+  updateProgress(0.1, 'Generating interlocking tabs');
   const { interlockingTabPockets, interlockingTabs } = generateInterlockingTabs(
     {
       shellConstants,
       drum,
+      updateProgress,
     }
   );
-  updateProgress(0.5);
+  updateProgress(0.2, 'Generating bearing edges');
   const { bearingEdgesTop, bearingEdgesBottom } = generateBearingEdges({
     shellConstants,
     drum,
     interlockingTabPockets,
+    updateProgress,
   });
-  updateProgress(0.75);
+  updateProgress(0.5, 'Generating shell segments');
   const shellSegments = generateShellSegments({
     shellConstants,
     drum,
     interlockingTabPockets,
+    updateProgress,
   });
   updateProgress(1);
 
