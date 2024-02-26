@@ -1,45 +1,35 @@
 import React from "react";
-import { Button } from "@mui/material";
-import { NumberInput } from "../CustomNumberInput";
-import Accordion from "@mui/material/Accordion";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import SelectInput from "../SelectInput";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { DrumSchema, drumSchemaObject } from "./inputSchema";
 import { ShellParameterOptions } from "./ShellParameterOptions";
 import { LugParameterOptions } from "./LugParameterOptions";
 import { BearingEdgeParameterOptions } from "./BearingEdgeParameterOptions";
 
-export const ParameterSelector = ({
-  printableDrum,
-  setPrintableDrum,
-  shell,
-  setShell,
-  lugs,
-  setLugs,
-  bearingEdges,
-  setBearingEdges,
-  generateModel,
-}) => {
-  const updateState = (state, setState, value, propertyName) => {
-    function setPropertyValue(obj: {}, path: string, value: any) {
-      let schema = obj;
-      const pList = path.split(".");
-      const len = pList.length;
-      for (let i = 0; i < len - 1; i++) {
-        const elem = pList[i];
-        schema = schema[elem];
-      }
+export const ParameterSelector = ({ printableDrum, generateModel }) => {
+  const {
+    watch,
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<DrumSchema>({
+    mode: "all",
+    resolver: zodResolver(drumSchemaObject),
+  });
 
-      schema[pList[len - 1]] = value;
-    }
-    let newState = { ...state };
-    setPropertyValue(newState, propertyName, value);
-    setState(newState);
+  const onSubmit: SubmitHandler<DrumSchema> = (drumSchema) => {
+    generateModel(drumSchema);
+  };
+
+  const accordionStyle = {
+    display: "flex",
+    flexDirection: "column",
+    gap: "4px",
   };
 
   return (
-    <div
+    <form
+      onSubmit={handleSubmit(onSubmit)}
       style={{
         display: "flex",
         justifyContent: "space-between",
@@ -70,35 +60,26 @@ export const ParameterSelector = ({
         <h1 style={{ lineHeight: 1, margin: "10px" }}>Print-A-Drum</h1>
         <ShellParameterOptions
           printableDrum={printableDrum}
-          setPrintableDrum={setPrintableDrum}
-          shell={shell}
-          setShell={setShell}
-          updateState={updateState}
+          register={register}
+          errors={errors}
+          style={accordionStyle}
         />
         <LugParameterOptions
-          updateState={updateState}
-          shell={shell}
-          lugs={lugs}
-          setLugs={setLugs}
+          printableDrum={printableDrum}
+          register={register}
+          errors={errors}
+          watch={watch}
+          style={accordionStyle}
         />
         <BearingEdgeParameterOptions
-          updateState={updateState}
-          shell={shell}
-          bearingEdges={bearingEdges}
-          setBearingEdges={setBearingEdges}
+          printableDrum={printableDrum}
+          register={register}
+          errors={errors}
+          watch={watch}
+          style={accordionStyle}
         />
       </div>
-
-      <Button
-        variant="contained"
-        onClick={() => {
-          console.log(printableDrum);
-          
-          // generateModel();
-        }}
-      >
-        Generate
-      </Button>
-    </div>
+      <button type="submit">Generate</button>
+    </form>
   );
 };
