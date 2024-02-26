@@ -43,7 +43,7 @@ export const ParameterSelector = ({ printableDrum, generateModel }) => {
         zIndex: 100,
         backgroundColor: "#FFF",
         height: "calc(100vh - 60px)",
-        borderRadius: "10px",
+        borderRadius: "5px",
       }}
     >
       <div
@@ -79,7 +79,12 @@ export const ParameterSelector = ({ printableDrum, generateModel }) => {
           style={accordionStyle}
         />
       </div>
-      <button type="submit">Generate</button>
+      <button
+        type="submit"
+        style={{ height: "2em", fontSize: "1em", fontWeight: 550 }}
+      >
+        Generate
+      </button>
     </form>
   );
 };
