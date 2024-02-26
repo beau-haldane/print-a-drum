@@ -22,7 +22,7 @@ export const ParameterSelector = ({
   generateModel,
 }) => {
   const updateState = (state, setState, value, propertyName) => {
-        function setPropertyValue(obj: {}, path: string, value: any) {
+    function setPropertyValue(obj: {}, path: string, value: any) {
       let schema = obj;
       const pList = path.split(".");
       const len = pList.length;
@@ -37,7 +37,6 @@ export const ParameterSelector = ({
     setPropertyValue(newState, propertyName, value);
     setState(newState);
   };
-  const inputRef = React.useRef<HTMLInputElement | null>(null);
 
   return (
     <div
@@ -90,7 +89,14 @@ export const ParameterSelector = ({
         />
       </div>
 
-      <Button variant="contained" onClick={() => generateModel()}>
+      <Button
+        variant="contained"
+        onClick={() => {
+          console.log(printableDrum);
+          
+          // generateModel();
+        }}
+      >
         Generate
       </Button>
     </div>

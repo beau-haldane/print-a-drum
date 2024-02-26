@@ -9,8 +9,8 @@ export const BearingEdgeParameterOptions = ({
   bearingEdges,
   setBearingEdges,
 }) => {
-  const capitalizeFirstLetter = (string: string): string => {
-    if (string) return string.charAt(0).toUpperCase() + string.slice(1);
+  const capitaliseFirstLetter = (string: string): string => {
+    if (string) return string.charAt(0).toUpperCase() + string.slice(1).split(/(?=[A-Z])/).join(' ')
     return "";
   };
 
@@ -32,7 +32,7 @@ export const BearingEdgeParameterOptions = ({
           setState={setBearingEdges}
         />
         <NumberInput
-          label={`Outer ${capitalizeFirstLetter(
+          label={`Outer ${capitaliseFirstLetter(
             bearingEdges.topBearingEdge.outerEdge.profileType
           )} Size`}
           defaultValue={bearingEdges.topBearingEdge.outerEdge.profileSize}
@@ -47,7 +47,7 @@ export const BearingEdgeParameterOptions = ({
         {bearingEdges.topBearingEdge.outerEdge.profileType ===
           "customChamfer" && (
           <NumberInput
-            label={`Outer ${capitalizeFirstLetter(
+            label={`Outer ${capitaliseFirstLetter(
               bearingEdges.topBearingEdge.outerEdge.profileType
             )} Angle`}
             defaultValue={bearingEdges.topBearingEdge.outerEdge.customChamferAngle}
@@ -77,7 +77,7 @@ export const BearingEdgeParameterOptions = ({
         {bearingEdges.topBearingEdge.innerEdge.profileType ===
           "customChamfer" && (
           <NumberInput
-            label={`Outer ${capitalizeFirstLetter(
+            label={`Outer ${capitaliseFirstLetter(
               bearingEdges.topBearingEdge.outerEdge.profileType
             )} Angle`}
             defaultValue={bearingEdges.topBearingEdge.innerEdge.customChamferAngle}
@@ -120,7 +120,7 @@ export const BearingEdgeParameterOptions = ({
         {bearingEdges.bottomBearingEdge.outerEdge.profileType ===
           "customChamfer" && (
           <NumberInput
-            label={`Outer ${capitalizeFirstLetter(
+            label={`Outer ${capitaliseFirstLetter(
               bearingEdges.bottomBearingEdge.outerEdge.profileType
             )} Angle`}
             defaultValue={bearingEdges.bottomBearingEdge.outerEdge.customChamferAngle}
@@ -134,7 +134,7 @@ export const BearingEdgeParameterOptions = ({
           />
         )}
         <NumberInput
-          label={`Outer ${capitalizeFirstLetter(
+          label={`Outer ${capitaliseFirstLetter(
             bearingEdges.bottomBearingEdge.outerEdge.profileType
           )} Size`}
           defaultValue={bearingEdges.bottomBearingEdge.outerEdge.profileSize}
@@ -163,7 +163,7 @@ export const BearingEdgeParameterOptions = ({
         {bearingEdges.bottomBearingEdge.innerEdge.profileType ===
           "customChamfer" && (
           <NumberInput
-            label={`Outer ${capitalizeFirstLetter(
+            label={`Outer ${capitaliseFirstLetter(
               bearingEdges.bottomBearingEdge.innerEdge.profileType
             )} Angle`}
             defaultValue={bearingEdges.bottomBearingEdge.innerEdge.customChamferAngle}

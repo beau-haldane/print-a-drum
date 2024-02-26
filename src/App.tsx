@@ -9,6 +9,7 @@ import { BearingEdges, Drum, DrumShell, Lugs } from "./model/types.ts";
 import { Button } from "@mui/material";
 import JSZip from "jszip";
 import { fileSave } from "browser-fs-access";
+import { ParameterSelectorNew } from "./components/ParameterSelector/ParameterSelectorNew.tsx";
 
 // @ts-expect-error - Property 'DefaultUp' does not exist on type 'typeof Object3D', however this code executes fine and is necessary to the correct rotational axis
 THREE.Object3D.DefaultUp.set(0, 0, 1);
@@ -137,7 +138,7 @@ export default function ReplicadApp() {
 
   return (
     <>
-      <ParameterSelector
+      {/* <ParameterSelector
         printableDrum={printableDrum}
         setPrintableDrum={setPrintableDrum}
         shell={shell}
@@ -147,9 +148,10 @@ export default function ReplicadApp() {
         bearingEdges={bearingEdges}
         setBearingEdges={setBearingEdges}
         generateModel={generateModel}
-      />
+      /> */}
+      <ParameterSelectorNew />
       <section style={{ height: "100vh" }}>
-        <Button onClick={() => downloadModel()}>Download</Button>
+        {/* <Button onClick={() => downloadModel()}>Download</Button> */}
         {!loading && model ? (
           <PresentationViewer
             shapes={model}
@@ -185,6 +187,7 @@ export default function ReplicadApp() {
                     fontSize: "0.5em",
                     margin: 0,
                   }}
+                  key={i}
                 >
                   {message}
                   {latestMessage ? "..." : " ✔️"}
