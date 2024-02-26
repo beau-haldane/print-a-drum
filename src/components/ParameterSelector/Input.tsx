@@ -64,86 +64,26 @@ export const SelectInput = ({
   registerTo,
   inputOptions,
   errors,
+  initialValue = null,
 }) => {
   return (
     <>
-    <InputContainer label={label} errors={errors}>
-    <select {...register(registerTo)} style={{ width: "108px" }}>
-          {inputOptions.map((option, i) => (
-            <option value={option.value} key={i}>
-              {option.label}
-            </option>
-          ))}
+      <InputContainer label={label} errors={errors}>
+        <select {...register(registerTo)} style={{ width: "108px" }}>
+          {inputOptions.map((option, i) => {
+            return option.value === initialValue ? (
+              <option selected value={option.value} key={i}>
+                {option.label}
+              </option>
+            ) : (
+              <option value={option.value} key={i}>
+                {option.label}
+              </option>
+            );
+          })}
         </select>
-    </InputContainer>
-      
+      </InputContainer>
     </>
   );
 };
 
-export const SimplifiedInput = ({
-  label,
-  defaultValue,
-  min,
-  max,
-  step,
-  propertyName,
-  updateState,
-  state,
-  setState,
-}) => (
-  <div
-    style={{
-      width: "100%",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      fontSize: "0.85em",
-    }}
-  >
-    <label>{label}</label>
-    <input
-      style={{ width: "100px" }}
-      type="text"
-      value={state[propertyName]}
-      onChange={(event) =>
-        updateState(state, setState, event.target.value, `${propertyName}`)
-      }
-    ></input>
-  </div>
-);
-
-export const SimplifiedSelect = ({
-  label,
-  values,
-  defaultValue,
-  propertyName,
-  updateState,
-  state,
-  setState,
-}) => (
-  <div
-    style={{
-      width: "100%",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      fontSize: "0.85em",
-    }}
-  >
-    <label>{label}</label>
-    <select
-      style={{ width: "108px" }}
-      value={state[propertyName]}
-      onChange={(event) =>
-        updateState(state, setState, event.target.value, `${propertyName}`)
-      }
-    >
-      {values.map((option, i) => (
-        <option value={option.value} key={i}>
-          {option.displayText}
-        </option>
-      ))}
-    </select>
-  </div>
-);
