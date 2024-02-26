@@ -6,16 +6,35 @@ import { wrap, proxy } from "comlink";
 import PresentationViewer from "./replicad-studio-components/PresentationViewer.jsx";
 import { ParameterSelector } from "./components/ParameterSelector/ParameterSelector.tsx";
 import { BearingEdges, Drum, DrumShell, Lugs } from "./model/types.ts";
+import { Button } from "@mui/material";
+import JSZip from "jszip";
+import { fileSave } from "browser-fs-access";
 
 // @ts-expect-error - Property 'DefaultUp' does not exist on type 'typeof Object3D', however this code executes fine and is necessary to the correct rotational axis
 THREE.Object3D.DefaultUp.set(0, 0, 1);
 
 const cad = wrap(new cadWorker());
 
-function convertToPercentage(number) {
+const convertToPercentage = (number) => {
   const percentage = number * 100;
   return percentage.toFixed(2) + "%";
-}
+};
+
+const downloadModel = async () => {
+  // @ts-expect-error - see TODO on line 1
+  const shapes = await cad.createBlobs();
+  const zip = new JSZip();
+  shapes.forEach((shape, i) => {
+    zip.file(`${shape.name || `shape-${i}`}.stl`, shape.blob);
+  });
+  const zipBlob = await zip.generateAsync({ type: "blob" });
+  await fileSave(zipBlob, {
+    id: "exports",
+    description: "Save zip",
+    fileName: `Printable-Drum.zip`,
+    extensions: [".zip"],
+  });
+};
 
 export default function ReplicadApp() {
   const [loading, setLoading] = useState(true);
@@ -83,6 +102,7 @@ export default function ReplicadApp() {
     if (message) modelProgressState.messages.push(message);
     setModelProgress(modelProgressState);
   };
+
   const updateModel = (model) => {
     setModel(model);
   };
@@ -129,6 +149,7 @@ export default function ReplicadApp() {
         generateModel={generateModel}
       />
       <section style={{ height: "100vh" }}>
+        <Button onClick={() => downloadModel()}>Download</Button>
         {!loading && model ? (
           <PresentationViewer
             shapes={model}
@@ -157,17 +178,19 @@ export default function ReplicadApp() {
               modelProgress.progress
             )}`}</span>
             {modelProgress.messages.map((message, i) => {
-              const latestMessage = i + 1 === modelProgress.messages.length
+              const latestMessage = i + 1 === modelProgress.messages.length;
               return (
-              <p
-                style={{
-                  fontSize: "0.5em",
-                  margin: 0
-                }}
-              >
-                {message}{latestMessage ? '...' : ' ✔️'}
-              </p>
-            )})}
+                <p
+                  style={{
+                    fontSize: "0.5em",
+                    margin: 0,
+                  }}
+                >
+                  {message}
+                  {latestMessage ? "..." : " ✔️"}
+                </p>
+              );
+            })}
           </div>
         )}
       </section>
