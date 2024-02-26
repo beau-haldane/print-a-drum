@@ -57,7 +57,7 @@ export const ParameterSelector = ({ printableDrum, generateModel }) => {
           alignItems: "center",
         }}
       >
-        <h1 style={{ lineHeight: 1, margin: "10px" }}>Print-A-Drum</h1>
+        <h1 style={{ lineHeight: 1, margin: "10px 10px 20px 10px" }}>Print-A-Drum</h1>
         <ShellParameterOptions
           printableDrum={printableDrum}
           register={register}
