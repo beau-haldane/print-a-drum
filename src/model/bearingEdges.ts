@@ -1,4 +1,5 @@
-import { Drum, ShapeArray, ShellConstants, SolidShape, WrappedShapeArray } from "./types";
+import { DrumSchema } from "../components/ParameterSelector/inputSchema";
+import { ShapeArray, ShellConstants, SolidShape, WrappedShapeArray } from "./types";
 import { generateChamferCuttingTool, generateSegmentBody } from "./utils";
 import { makePlane } from "replicad";
 
@@ -9,7 +10,7 @@ export const generateBearingEdges = ({
   updateProgress,
 }: {
   shellConstants: ShellConstants;
-  drum: Drum;
+  drum: DrumSchema;
   interlockingTabPockets: ShapeArray;
   updateProgress: (number: number, message?: string) => void;
 }): {
@@ -226,7 +227,7 @@ const generateBearingEdgeSegment = ({
   bearingEdgeThickness,
 }: {
   shellConstants: ShellConstants;
-  drum: Drum;
+  drum: DrumSchema;
   interlockingTabPockets: ShapeArray;
   bearingEdgeVertexAngle: number;
   bearingEdgeThickness: number;

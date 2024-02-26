@@ -1,11 +1,12 @@
 import { generateShellSegments } from "./shellSegments";
 import { generateInterlockingTabs } from "./interlockingTabs";
 import { generateBearingEdges } from "./bearingEdges";
-import { Drum, ShellConstants } from "./types";
+import { ShellConstants } from "./types";
 import { getShellConstants } from "./constants";
+import { DrumSchema } from "../components/ParameterSelector/inputSchema";
 
 export const generate3DPSD = (
-  drum: Drum,
+  drum: DrumSchema,
   updateProgress: (number: number) => string
 ) => {
   const { depthInches, diameterInches, shellThickness } = drum.shell;
@@ -26,7 +27,7 @@ const generateShellAssembly = ({
   updateProgress,
 }: {
   shellConstants: ShellConstants;
-  drum: Drum;
+  drum: DrumSchema;
   updateProgress: (number: number, message?: string) => void;
 }) => {
   updateProgress(0.1, 'Generating interlocking tabs');
