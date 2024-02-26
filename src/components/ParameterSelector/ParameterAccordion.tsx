@@ -17,6 +17,7 @@ export const ParameterAccordion = ({
         expandIcon={<ExpandMoreIcon />}
         aria-controls={title.toLowerCase().split(" ").join("-")}
         id={title.toLowerCase().split(" ").join("-")}
+        sx={{backgroundColor: "#f0f0f0"}}
       >
         <strong>{title}</strong>
       </AccordionSummary>

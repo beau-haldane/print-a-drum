@@ -1,5 +1,5 @@
+import { DrumSchema } from "../components/ParameterSelector/inputSchema";
 import {
-  Drum,
   ShapeArray,
   ShellConstants,
   SolidShape,
@@ -15,7 +15,7 @@ export const generateShellSegment = ({
   updateProgress,
 }: {
   shellConstants: ShellConstants;
-  drum: Drum;
+  drum: DrumSchema;
   interlockingTabPockets: ShapeArray;
   updateProgress: (number: number, message?: string) => void;
 }) => {
@@ -136,7 +136,7 @@ export const generateShellSegment = ({
         lugsPerSegment,
         depth - lugHoleDistanceFromEdge * 2
       );
-    } else if (lugType === "doublePoint") {
+    } else if (lugType === "doublePoint" && !!lugHoleSpacing) {
       lugHoles = [
         ...generateLugHoles(
           lugsPerSegment,
@@ -173,7 +173,7 @@ export const generateShellSegments = ({
   updateProgress,
 }: {
   shellConstants: ShellConstants;
-  drum: Drum;
+  drum: DrumSchema;
   interlockingTabPockets: ShapeArray;
   updateProgress: (number: number, message?: string) => void;
 }) => {

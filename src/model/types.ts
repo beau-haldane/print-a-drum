@@ -19,49 +19,6 @@ export type WrappedShapeArray = Array<{
   name: string;
 }>;
 
-export interface Drum {
-  fitmentTolerance: number;
-  shell: DrumShell;
-  bearingEdges: BearingEdges;
-  lugs: Lugs;
-}
-
-export interface DrumShell {
-  diameterInches: number;
-  depthInches: number;
-  shellThickness: number;
-  lugsPerSegment: number;
-}
-
-export interface BearingEdges {
-  lugsPerSegment: number;
-  topBearingEdge: BearingEdgeProfile;
-  bottomBearingEdge: BearingEdgeProfile;
-}
-
-export interface BearingEdgeProfile {
-  thickness: number;
-  outerEdge: {
-    profileType: ProfileType;
-    profileSize: number;
-    customChamferAngle?: number;
-  };
-  innerEdge: { profileType: ProfileType; customChamferAngle?: number };
-}
-
-export type ProfileType = "roundover" | "chamfer" | "customChamfer" | "none";
-
-export interface Lugs {
-  lugType: "singlePoint" | "doublePoint";
-  lugRows: 1 | 2;
-  lugNumber: number;
-  lugHoleSpacing: number;
-  lugHoleDiameter: number;
-  lugHolePocketDiameter: number;
-  lugHolePocketDepth: number;
-  lugHoleDistanceFromEdge?: number;
-}
-
 export type ShellConstants = {
   bearingEdgeHeight: number;
   bearingEdgeSegmentCoverage: number;

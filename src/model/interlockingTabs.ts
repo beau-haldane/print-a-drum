@@ -1,4 +1,5 @@
-import { Drum, ShapeArray, ShellConstants, WrappedShapeArray } from "./types";
+import { DrumSchema } from "../components/ParameterSelector/inputSchema";
+import { ShapeArray, ShellConstants, WrappedShapeArray } from "./types";
 import { generateFilletedSegmentBody } from "./utils";
 
 export const generateInterlockingTabs = ({
@@ -7,7 +8,7 @@ export const generateInterlockingTabs = ({
   updateProgress,
 }: {
   shellConstants: ShellConstants;
-  drum: Drum;
+  drum: DrumSchema;
   updateProgress: (number: number, message?: string) => void;
 }) => {
   const {

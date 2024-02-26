@@ -1,193 +1,177 @@
 import React from "react";
-import { NumberInput } from "../CustomNumberInput";
 import { ParameterAccordion } from "./ParameterAccordion";
-import SelectInput from "../SelectInput";
+import { TextInput, SelectInput } from "./Input";
+
+const capitalizeFirstLetter = (string: string): string => {
+  if (string)
+    return (
+      string.charAt(0).toUpperCase() +
+      string
+        .slice(1)
+        .split(/(?=[A-Z])/)
+        .join(" ")
+    );
+  return "";
+};
+
+const bearingEdgeProfileEnum = [
+  {
+    value: "roundover",
+    label: "Roundover",
+  },
+  {
+    value: "chamfer",
+    label: "45° Chamfer",
+  },
+  {
+    value: "customChamfer",
+    label: "Custom Chamfer",
+  },
+  {
+    value: "none",
+    label: "None",
+  },
+];
 
 export const BearingEdgeParameterOptions = ({
-  updateState,
-  shell,
-  bearingEdges,
-  setBearingEdges,
+  printableDrum,
+  register,
+  errors,
+  watch,
+  style,
 }) => {
-  const capitalizeFirstLetter = (string: string): string => {
-    if (string) return string.charAt(0).toUpperCase() + string.slice(1);
-    return "";
-  };
-
+  const topOuterProfile = watch(
+    "bearingEdges.topBearingEdge.outerEdge.profileType"
+  );
+  const topInnerProfile = watch(
+    "bearingEdges.topBearingEdge.innerEdge.profileType"
+  );
+  const bottomOuterProfile = watch(
+    "bearingEdges.bottomBearingEdge.outerEdge.profileType"
+  );
+  const bottomInnerProfile = watch(
+    "bearingEdges.bottomBearingEdge.innerEdge.profileType"
+  );
   return (
     <ParameterAccordion title="Bearing Edge Settings">
-      <ParameterAccordion title="Top Bearing Edge">
-        <SelectInput
-          label="Outer Edge Profile"
-          defaultValue={bearingEdges.topBearingEdge.outerEdge.profileType}
-          values={[
-            { value: "roundover", displayText: "Roundover" },
-            { value: "chamfer", displayText: "Chamfer" },
-            { value: "customChamfer", displayText: "Custom Chamfer" },
-            { value: "none", displayText: "None" },
-          ]}
-          propertyName="topBearingEdge.outerEdge.profileType"
-          updateState={updateState}
-          state={bearingEdges}
-          setState={setBearingEdges}
+      <div style={style}>
+        <TextInput
+          label="Lugs Per Bearing Edge Segment"
+          initialValue={printableDrum.bearingEdges.lugsPerSegment}
+          register={register}
+          registerTo="bearingEdges.lugsPerSegment"
+          errors={errors?.bearingEdges?.lugsPerSegment}
         />
-        <NumberInput
-          label={`Outer ${capitalizeFirstLetter(
-            bearingEdges.topBearingEdge.outerEdge.profileType
-          )} Size`}
-          defaultValue={bearingEdges.topBearingEdge.outerEdge.profileSize}
-          min={0}
-          max={bearingEdges.topBearingEdge.thickness}
-          step={1}
-          propertyName="topBearingEdge.outerEdge.profileSize"
-          updateState={updateState}
-          state={bearingEdges}
-          setState={setBearingEdges}
+        <h4>Top Bearing Edge Settings</h4>
+        <BearingEdgeInputs
+          register={register}
+          bearingEdgeProfileEnum={bearingEdgeProfileEnum}
+          outerProfile={topOuterProfile}
+          innerProfile={topInnerProfile}
+          bearingEdgeLocation="topBearingEdge"
+          errors={errors}
+          printableDrum={printableDrum}
         />
-        {bearingEdges.topBearingEdge.outerEdge.profileType ===
-          "customChamfer" && (
-          <NumberInput
-            label={`Outer ${capitalizeFirstLetter(
-              bearingEdges.topBearingEdge.outerEdge.profileType
-            )} Angle`}
-            defaultValue={bearingEdges.topBearingEdge.outerEdge.customChamferAngle}
-            min={0}
-            max={70}
-            step={1}
-            propertyName="topBearingEdge.outerEdge.customChamferAngle"
-            updateState={updateState}
-            state={bearingEdges}
-            setState={setBearingEdges}
-          />
-        )}
-        <SelectInput
-          label="Inner Edge Profile"
-          defaultValue={bearingEdges.topBearingEdge.innerEdge.profileType}
-          values={[
-            { value: "roundover", displayText: "Roundover" },
-            { value: "chamfer", displayText: "Chamfer" },
-            { value: "customChamfer", displayText: "Custom Chamfer" },
-            { value: "none", displayText: "None" },
-          ]}
-          propertyName="topBearingEdge.innerEdge.profileType"
-          updateState={updateState}
-          state={bearingEdges}
-          setState={setBearingEdges}
+        <h4>Bottom Bearing Edge Settings</h4>
+        <BearingEdgeInputs
+          register={register}
+          bearingEdgeProfileEnum={bearingEdgeProfileEnum}
+          outerProfile={bottomOuterProfile}
+          innerProfile={bottomInnerProfile}
+          bearingEdgeLocation="bottomBearingEdge"
+          errors={errors}
+          printableDrum={printableDrum}
         />
-        {bearingEdges.topBearingEdge.innerEdge.profileType ===
-          "customChamfer" && (
-          <NumberInput
-            label={`Outer ${capitalizeFirstLetter(
-              bearingEdges.topBearingEdge.outerEdge.profileType
-            )} Angle`}
-            defaultValue={bearingEdges.topBearingEdge.innerEdge.customChamferAngle}
-            min={0}
-            max={70}
-            step={1}
-            propertyName="topBearingEdge.innerEdge.customChamferAngle"
-            updateState={updateState}
-            state={bearingEdges}
-            setState={setBearingEdges}
-          />
-        )}
-        <NumberInput
-          label="Bearing Edge Thickness"
-          defaultValue={bearingEdges.topBearingEdge.thickness}
-          min={shell.shellThickness}
-          max={25} // TODO calculate this
-          step={1}
-          propertyName="topBearingEdge.thickness"
-          updateState={updateState}
-          state={bearingEdges}
-          setState={setBearingEdges}
-        />
-      </ParameterAccordion>
-      <ParameterAccordion title="Bottom Bearing Edge">
-        <SelectInput
-          label="Outer Edge Profile"
-          defaultValue={bearingEdges.bottomBearingEdge.outerEdge.profileType}
-          values={[
-            { value: "roundover", displayText: "Roundover" },
-            { value: "chamfer", displayText: "Chamfer" },
-            { value: "customChamfer", displayText: "Custom Chamfer" },
-            { value: "none", displayText: "None" },
-          ]}
-          propertyName="bottomBearingEdge.outerEdge.profileType"
-          updateState={updateState}
-          state={bearingEdges}
-          setState={setBearingEdges}
-        />
-        {bearingEdges.bottomBearingEdge.outerEdge.profileType ===
-          "customChamfer" && (
-          <NumberInput
-            label={`Outer ${capitalizeFirstLetter(
-              bearingEdges.bottomBearingEdge.outerEdge.profileType
-            )} Angle`}
-            defaultValue={bearingEdges.bottomBearingEdge.outerEdge.customChamferAngle}
-            min={0}
-            max={70}
-            step={1}
-            propertyName="bottomBearingEdge.outerEdge.customChamferAngle"
-            updateState={updateState}
-            state={bearingEdges}
-            setState={setBearingEdges}
-          />
-        )}
-        <NumberInput
-          label={`Outer ${capitalizeFirstLetter(
-            bearingEdges.bottomBearingEdge.outerEdge.profileType
-          )} Size`}
-          defaultValue={bearingEdges.bottomBearingEdge.outerEdge.profileSize}
-          min={0}
-          max={bearingEdges.bottomBearingEdge.thickness}
-          step={1}
-          propertyName="bottomBearingEdge.outerEdge.profileSize"
-          updateState={updateState}
-          state={bearingEdges}
-          setState={setBearingEdges}
-        />
-        <SelectInput
-          label="Inner Edge Profile"
-          defaultValue={bearingEdges.bottomBearingEdge.innerEdge.profileType}
-          values={[
-            { value: "roundover", displayText: "Roundover" },
-            { value: "chamfer", displayText: "Chamfer" },
-            { value: "customChamfer", displayText: "Custom Chamfer" },
-            { value: "none", displayText: "None" },
-          ]}
-          propertyName="bottomBearingEdge.innerEdge.profileType"
-          updateState={updateState}
-          state={bearingEdges}
-          setState={setBearingEdges}
-        />
-        {bearingEdges.bottomBearingEdge.innerEdge.profileType ===
-          "customChamfer" && (
-          <NumberInput
-            label={`Outer ${capitalizeFirstLetter(
-              bearingEdges.bottomBearingEdge.innerEdge.profileType
-            )} Angle`}
-            defaultValue={bearingEdges.bottomBearingEdge.innerEdge.customChamferAngle}
-            min={0}
-            max={70}
-            step={1}
-            propertyName="bottomBearingEdge.innerEdge.customChamferAngle"
-            updateState={updateState}
-            state={bearingEdges}
-            setState={setBearingEdges}
-          />
-        )}
-        <NumberInput
-          label="Bearing Edge Thickness"
-          defaultValue={bearingEdges.bottomBearingEdge.thickness}
-          min={shell.shellThickness}
-          max={25} // TODO calculate this
-          step={1}
-          propertyName="bottomBearingEdge.thickness"
-          updateState={updateState}
-          state={bearingEdges}
-          setState={setBearingEdges}
-        />
-      </ParameterAccordion>
+      </div>
     </ParameterAccordion>
+  );
+};
+
+const BearingEdgeInputs = ({
+  register,
+  bearingEdgeProfileEnum,
+  outerProfile,
+  innerProfile,
+  bearingEdgeLocation,
+  errors,
+  printableDrum,
+}) => {
+  return (
+    <>
+      <SelectInput
+        label="Outer Edge Profile"
+        register={register}
+        registerTo={`bearingEdges.${bearingEdgeLocation}.outerEdge.profileType`}
+        inputOptions={bearingEdgeProfileEnum}
+        errors={
+          errors?.bearingEdges?.[bearingEdgeLocation]?.outerEdge?.profileType
+        }
+        initialValue={
+          printableDrum.bearingEdges[bearingEdgeLocation].outerEdge.profileType
+        }
+      />
+      {outerProfile !== "none" && (
+        <TextInput
+          label={`Outer ${capitalizeFirstLetter(outerProfile)} Size`}
+          initialValue={
+            printableDrum.bearingEdges[bearingEdgeLocation].outerEdge
+              .profileSize
+          }
+          register={register}
+          registerTo={`bearingEdges.${bearingEdgeLocation}.outerEdge.profileSize`}
+          errors={
+            errors?.bearingEdges?.[bearingEdgeLocation]?.outerEdge?.profileSize
+          }
+        />
+      )}
+      {outerProfile === "customChamfer" && (
+        <TextInput
+          label={`Outer ${capitalizeFirstLetter(outerProfile)} Angle`}
+          initialValue={
+            printableDrum.bearingEdges[bearingEdgeLocation].outerEdge
+          }
+          register={register}
+          registerTo={`bearingEdges.${bearingEdgeLocation}.outerEdge.customChamferAngle`}
+          errors={
+            errors?.bearingEdges?.[bearingEdgeLocation]?.outerEdge
+              ?.customChamferAngle
+          }
+        />
+      )}
+      <SelectInput
+        label="Inner Edge Profile"
+        register={register}
+        registerTo={`bearingEdges.${bearingEdgeLocation}.innerEdge.profileType`}
+        inputOptions={bearingEdgeProfileEnum}
+        errors={
+          errors?.bearingEdges?.[bearingEdgeLocation]?.innerEdge?.profileType
+        }
+        initialValue={
+          printableDrum.bearingEdges[bearingEdgeLocation].innerEdge.profileType
+        }
+      />
+      {innerProfile === "customChamfer" && (
+        <TextInput
+          label={`Inner ${capitalizeFirstLetter(innerProfile)} Angle`}
+          initialValue={
+            printableDrum.bearingEdges[bearingEdgeLocation].innerEdge
+              .customChamferAngle
+          }
+          register={register}
+          registerTo={`bearingEdges.${bearingEdgeLocation}.innerEdge.customChamferAngle`}
+          errors={
+            errors?.bearingEdges?.[bearingEdgeLocation]?.innerEdge
+              ?.customChamferAngle
+          }
+        />
+      )}
+      <TextInput
+        label="Bearing Edge Thickness"
+        initialValue={printableDrum.bearingEdges[bearingEdgeLocation].thickness}
+        register={register}
+        registerTo={`bearingEdges.${bearingEdgeLocation}.thickness`}
+        errors={errors?.bearingEdges?.[bearingEdgeLocation]?.thickness}
+      />
+    </>
   );
 };

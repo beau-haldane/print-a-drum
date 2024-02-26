@@ -17,6 +17,7 @@
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@fontsource/roboto": "^5.0.8",
+    "@hookform/resolvers": "^3.3.4",
     "@mui/base": "^5.0.0-beta.36",
     "@mui/icons-material": "^5.15.10",
     "@mui/material": "^5.15.10",
@@ -29,12 +30,14 @@
     "polished": "^4.3.1",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-hook-form": "^7.50.1",
     "replicad": "^0.15.3",
     "replicad-opencascadejs": "^0.15.2",
     "replicad-threejs-helper": "^0.15.2",
     "styled-components": "^6.1.8",
     "three": "0.148.0",
-    "typescript": "^5.3.3"
+    "typescript": "^5.3.3",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "3.0.1",
