@@ -254,7 +254,7 @@ const generateBearingEdgeSegment = ({
     const cuttingTool = generateChamferCuttingTool({
       plane: makePlane("XZ"),
       startRadius: radius - shellThickness,
-      chamferAngle: 30,
+      chamferAngle: 45,
       chamferWidth: bearingEdgeThickness - shellThickness,
       chamferStartHeight: bearingEdgeHeight,
       chamferUp: false,
