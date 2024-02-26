@@ -4,12 +4,10 @@ import React, { useState, useEffect } from "react";
 import * as THREE from "three";
 import { wrap, proxy } from "comlink";
 import PresentationViewer from "./replicad-studio-components/PresentationViewer.jsx";
-import { ParameterSelector } from "./components/ParameterSelector/ParameterSelector.tsx";
-import { BearingEdges, Drum, DrumShell, Lugs } from "./model/types.ts";
-import { Button } from "@mui/material";
 import JSZip from "jszip";
 import { fileSave } from "browser-fs-access";
-import { ParameterSelectorNew } from "./components/ParameterSelector/ParameterSelectorNew.tsx";
+import { ParameterSelector } from "./components/ParameterSelector/ParameterSelector.tsx";
+import { DrumSchema } from "./components/ParameterSelector/inputSchema.ts";
 
 // @ts-expect-error - Property 'DefaultUp' does not exist on type 'typeof Object3D', however this code executes fine and is necessary to the correct rotational axis
 THREE.Object3D.DefaultUp.set(0, 0, 1);
@@ -47,54 +45,51 @@ export default function ReplicadApp() {
     progress: 0,
     messages: [],
   });
-  const [shell, setShell] = useState<DrumShell>({
-    diameterInches: 14,
-    depthInches: 6.5,
-    shellThickness: 12,
-    lugsPerSegment: 2,
-  });
-  const [lugs, setLugs] = useState<Lugs>({
-    lugType: "doublePoint",
-    lugRows: 2,
-    lugNumber: 8,
-    lugHoleSpacing: 20,
-    lugHoleDiameter: 5,
-    lugHolePocketDiameter: 8,
-    lugHolePocketDepth: 2,
-    lugHoleDistanceFromEdge: 45,
-  });
-  const [bearingEdges, setBearingEdges] = useState<BearingEdges>({
-    lugsPerSegment: 2,
-    topBearingEdge: {
-      thickness: shell.shellThickness,
-      outerEdge: {
-        profileType: "roundover",
-        profileSize: shell.shellThickness / 2,
-        customChamferAngle: 0,
-      },
-      innerEdge: {
-        profileType: "chamfer",
-        customChamferAngle: 0,
-      },
-    },
-    bottomBearingEdge: {
-      thickness: shell.shellThickness,
-      outerEdge: {
-        profileType: "roundover",
-        profileSize: shell.shellThickness / 2,
-        customChamferAngle: 0,
-      },
-      innerEdge: {
-        profileType: "chamfer",
-        customChamferAngle: 0,
-      },
-    },
-  });
-  const [printableDrum, setPrintableDrum] = useState<Drum>({
+  const [printableDrum, setPrintableDrum] = useState<DrumSchema>({
     fitmentTolerance: 0.2,
-    shell,
-    lugs,
-    bearingEdges,
+    shell: {
+      diameterInches: 14,
+      depthInches: 6.5,
+      shellThickness: 10,
+      lugsPerSegment: 2,
+    },
+    lugs: {
+      lugType: "doublePoint",
+      lugRows: 2,
+      lugNumber: 8,
+      lugHoleSpacing: 20,
+      lugHoleDiameter: 5,
+      lugHolePocketDiameter: 8,
+      lugHolePocketDepth: 2,
+      lugHoleDistanceFromEdge: 40,
+    },
+    bearingEdges: {
+      lugsPerSegment: 2,
+      topBearingEdge: {
+        thickness: 10,
+        outerEdge: {
+          profileType: "roundover",
+          profileSize: 10 / 2,
+          customChamferAngle: 0,
+        },
+        innerEdge: {
+          profileType: "chamfer",
+          customChamferAngle: 0,
+        },
+      },
+      bottomBearingEdge: {
+        thickness: 10,
+        outerEdge: {
+          profileType: "roundover",
+          profileSize: 10 / 2,
+          customChamferAngle: 0,
+        },
+        innerEdge: {
+          profileType: "chamfer",
+          customChamferAngle: 0,
+        },
+      },
+    },
   });
 
   const updateModelProgress = (progress: number, message?: string) => {
@@ -108,48 +103,34 @@ export default function ReplicadApp() {
     setModel(model);
   };
 
-  const generateModel = () => {
-    setModelProgress({
-      progress: 0,
-      messages: [],
-    });
+  const generateModel = (drumSchema?: DrumSchema) => {
+    if (drumSchema) setPrintableDrum(drumSchema);
     setLoading(true);
     cad // @ts-expect-error - see TODO on line 1
       .createAssembly(
-        printableDrum,
+        drumSchema || printableDrum,
         proxy(updateModelProgress),
         proxy(updateModel)
       )
-      .then(() => setLoading(false));
+      .then(() => {
+        setModelProgress({
+          progress: 0,
+          messages: [],
+        });
+        setLoading(false);
+      });
   };
 
   useEffect(() => {
     generateModel();
   }, []);
 
-  useEffect(() => {
-    setPrintableDrum({
-      lugs,
-      shell,
-      fitmentTolerance: 0.2,
-      bearingEdges,
-    });
-  }, [shell, lugs, bearingEdges]);
-
   return (
     <>
-      {/* <ParameterSelector
+      <ParameterSelector
         printableDrum={printableDrum}
-        setPrintableDrum={setPrintableDrum}
-        shell={shell}
-        setShell={setShell}
-        lugs={lugs}
-        setLugs={setLugs}
-        bearingEdges={bearingEdges}
-        setBearingEdges={setBearingEdges}
         generateModel={generateModel}
-      /> */}
-      <ParameterSelectorNew />
+      />
       <section style={{ height: "100vh" }}>
         {/* <Button onClick={() => downloadModel()}>Download</Button> */}
         {!loading && model ? (
