@@ -6,8 +6,13 @@ import { ShellParameterOptions } from "./ShellParameterOptions";
 import { LugParameterOptions } from "./LugParameterOptions";
 import { BearingEdgeParameterOptions } from "./BearingEdgeParameterOptions";
 import { SnareParameterOptions } from "./SnareParameterOptions";
+import { TailSpin } from "react-loader-spinner";
 
-export const ParameterSelector = ({ printableDrum, generateModel }) => {
+export const ParameterSelector = ({
+  printableDrum,
+  generateModel,
+  loading,
+}) => {
   const {
     watch,
     register,
@@ -23,8 +28,8 @@ export const ParameterSelector = ({ printableDrum, generateModel }) => {
   };
 
   const onError = (arg1, arg2) => {
-    console.log('error: ', arg1, arg2)
-  }
+    console.log("error: ", arg1, arg2);
+  };
 
   const drumType = watch("drumType");
 
@@ -64,7 +69,9 @@ export const ParameterSelector = ({ printableDrum, generateModel }) => {
           alignItems: "center",
         }}
       >
-        <h1 style={{ lineHeight: 1, margin: "10px 10px 20px 10px" }}>Print-A-Drum</h1>
+        <h1 style={{ lineHeight: 1, margin: "10px 10px 20px 10px" }}>
+          Print-A-Drum
+        </h1>
         <ShellParameterOptions
           printableDrum={printableDrum}
           register={register}
@@ -85,8 +92,8 @@ export const ParameterSelector = ({ printableDrum, generateModel }) => {
           watch={watch}
           style={accordionStyle}
         />
-        {drumType === 'snare' && (
-          <SnareParameterOptions 
+        {drumType === "snare" && (
+          <SnareParameterOptions
             printableDrum={printableDrum}
             register={register}
             errors={errors}
@@ -97,8 +104,26 @@ export const ParameterSelector = ({ printableDrum, generateModel }) => {
       <button
         type="submit"
         style={{ height: "2em", fontSize: "1em", fontWeight: 550 }}
+        disabled={loading}
       >
-        Generate
+        {loading ? (
+          <TailSpin
+            visible={true}
+            height="20"
+            width="20"
+            color="#000"
+            ariaLabel="tail-spin-loading"
+            radius="1"
+            wrapperStyle={{
+              width: "100%",
+              display: "flex",
+              justifyContent: "center",
+            }}
+            wrapperClass=""
+          />
+        ) : (
+          "Generate"
+        )}
       </button>
     </form>
   );

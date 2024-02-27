@@ -8,6 +8,7 @@ import JSZip from "jszip";
 import { fileSave } from "browser-fs-access";
 import { ParameterSelector } from "./components/ParameterSelector/ParameterSelector.tsx";
 import { DrumSchema } from "./components/ParameterSelector/inputSchema.ts";
+import { TailSpin } from "react-loader-spinner";
 
 // @ts-expect-error - Property 'DefaultUp' does not exist on type 'typeof Object3D', however this code executes fine and is necessary to the correct rotational axis
 THREE.Object3D.DefaultUp.set(0, 0, 1);
@@ -137,9 +138,41 @@ export default function ReplicadApp() {
       <ParameterSelector
         printableDrum={printableDrum}
         generateModel={generateModel}
+        loading={loading}
       />
       <section style={{ height: "100vh" }}>
-        {/* <Button onClick={() => downloadModel()}>Download</Button> */}
+        <button
+          onClick={() => downloadModel()}
+          style={{
+            fontFamily: "Roboto",
+            height: "2em",
+            fontSize: "1em",
+            fontWeight: 550,
+            position: "absolute",
+            right: "0px",
+            margin: "20px",
+            zIndex: 100,
+          }}
+        >
+          {loading ? (
+            <TailSpin
+              visible={true}
+              height="20"
+              width="20"
+              color="#000"
+              ariaLabel="tail-spin-loading"
+              radius="1"
+              wrapperStyle={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+              wrapperClass=""
+            />
+          ) : (
+            "Download STL Files"
+          )}
+        </button>
         {!loading && model ? (
           <PresentationViewer
             shapes={model}
