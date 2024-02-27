@@ -46,12 +46,14 @@ export default function ReplicadApp() {
     messages: [],
   });
   const [printableDrum, setPrintableDrum] = useState<DrumSchema>({
+    drumType: "snare",
     fitmentTolerance: 0.2,
     shell: {
       diameterInches: 14,
       depthInches: 6.5,
       shellThickness: 10,
       lugsPerSegment: 2,
+      ventHoleDiameter: 10,
     },
     lugs: {
       lugType: "doublePoint",
@@ -89,6 +91,11 @@ export default function ReplicadApp() {
           customChamferAngle: 0,
         },
       },
+    },
+    snareBeds: {
+      snareBedAngle: 10,
+      snareBedRadius: 400,
+      snareBedDepth: 2.5,
     },
   });
 
