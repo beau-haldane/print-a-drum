@@ -1,3 +1,4 @@
+import { Segment } from "@react-three/drei";
 import { DrumSchema } from "../components/ParameterSelector/inputSchema";
 import {
   ShapeArray,
@@ -30,7 +31,6 @@ export const generateShellSegment = ({
     tabFitmentToleranceDegrees,
     shellSegmentPlane,
   } = shellConstants;
-  let { shellSegmentVertexAngle } = shellConstants;
   const { fitmentTolerance, lugs } = drum;
   const { shellThickness, lugsPerSegment } = drum.shell;
   const {
@@ -42,6 +42,8 @@ export const generateShellSegment = ({
     lugHolePocketDiameter,
     lugHolePocketDepth,
   } = lugs;
+  const totalVertextAngle =
+    shellConstants.shellSegmentVertexAngle * lugsPerSegment;
 
   const generateLugHoles = (lugsPerSegment, lugHolesDistance = 0) => {
     let lugHole = drawCircle(lugHoleDiameter / 2)
@@ -61,13 +63,13 @@ export const generateShellSegment = ({
         lugHole
           .clone()
           .translateZ(shellCenterPoint - lugHolesDistance / 2)
-          .rotate(shellSegmentVertexAngle / 2)
+          .rotate(totalVertextAngle / 2)
       );
       lugHoles.push(
         lugHole
           .clone()
           .translateZ(shellCenterPoint + lugHolesDistance / 2)
-          .rotate(shellSegmentVertexAngle / 2)
+          .rotate(totalVertextAngle / 2)
       );
 
       if (lugHolesDistance) {
@@ -75,13 +77,13 @@ export const generateShellSegment = ({
           lugHole
             .clone()
             .translateZ(shellCenterPoint + lugHolesDistance / 2)
-            .rotate(-shellSegmentVertexAngle / 2)
+            .rotate(-totalVertextAngle / 2)
         );
         lugHoles.push(
           lugHole
             .clone()
             .translateZ(shellCenterPoint - lugHolesDistance / 2)
-            .rotate(-shellSegmentVertexAngle / 2)
+            .rotate(-totalVertextAngle / 2)
         );
       }
       if (lugsPerSegment === 2) {
@@ -98,7 +100,7 @@ export const generateShellSegment = ({
   };
   const shellSegmentBase = generateSegmentBody(
     radius,
-    shellSegmentVertexAngle,
+    totalVertextAngle,
     shellThickness,
     shellSegmentHeight,
     shellSegmentPlane
@@ -109,14 +111,14 @@ export const generateShellSegment = ({
     tabThickness,
     shellSegmentHeight,
     shellSegmentPlane
-  ).rotate(-shellSegmentVertexAngle / 2);
+  ).rotate(-totalVertextAngle / 2);
   const shellSegmentTabPocket = generateSegmentBody(
     tabOuterRadius + fitmentTolerance,
     tabVertexAngle + tabFitmentToleranceDegrees * 2,
     tabThickness + fitmentTolerance * 2,
     shellSegmentHeight,
     shellSegmentPlane
-  ).rotate(shellSegmentVertexAngle / 2);
+  ).rotate(totalVertextAngle / 2);
 
   const shellSegment: SolidShape = shellSegmentBase
     .fuse(shellSegmentTab)
@@ -153,11 +155,11 @@ export const generateShellSegment = ({
   updateProgress(0.6, "Cutting lug holes and tab pockets");
   const cutOperations: ShapeArray = [...interlockingTabPockets, ...lugHoles];
   const { shellSegment: shellSegmentFinal } = cutOperations.reduce(
-    ({shellSegment, progress}, operation, i) => {
+    ({ shellSegment, progress }, operation, i) => {
       const segment = shellSegment.cut(operation);
-      progress = progress + ((i + 1) / cutOperations.length * 0.4)
+      progress = progress + ((i + 1) / cutOperations.length) * 0.4;
       updateProgress(progress);
-      
+
       return { shellSegment: segment, progress: 0.6 };
     },
     { shellSegment: shellSegment, progress: 0.6 }
@@ -177,10 +179,11 @@ export const generateShellSegments = ({
   interlockingTabPockets: ShapeArray;
   updateProgress: (number: number, message?: string) => void;
 }) => {
-  const { lugsPerSegment } = drum.shell;
-  shellConstants.shellSegmentVertexAngle =
+  const { lugsPerSegment, ventHoleDiameter } = drum.shell;
+  const totalVertextAngle =
     shellConstants.shellSegmentVertexAngle * lugsPerSegment;
-  const { shellSegmentVertexAngle } = shellConstants;
+  const { shellSegmentVertexAngle, radius, shellThickness, depth } =
+    shellConstants;
 
   updateProgress(0.4, "Generating base shell segment");
   const shellSegment = generateShellSegment({
@@ -190,21 +193,52 @@ export const generateShellSegments = ({
     updateProgress,
   });
   const shellSegments: WrappedShapeArray = [];
-  for (let i = 0; i < 360 / shellSegmentVertexAngle; i++) {
+  for (let i = 0; i < 360 / totalVertextAngle; i++) {
     if (lugsPerSegment === 1) {
+      let shellSegmentProcessed = shellSegment
+        .clone()
+        .rotate(i * totalVertextAngle);
       shellSegments.push({
-        shape: shellSegment.clone().rotate(i * shellSegmentVertexAngle),
+        shape: shellSegmentProcessed,
         name: `Shell Segment ${i + 1}`,
       });
     } else if (lugsPerSegment === 2) {
+      let shellSegmentProcessed = shellSegment
+        .clone()
+        .rotate(i * totalVertextAngle - totalVertextAngle / 4);
       shellSegments.push({
-        shape: shellSegment
-          .clone()
-          .rotate(i * shellSegmentVertexAngle - shellSegmentVertexAngle / 4),
+        shape: shellSegmentProcessed,
         name: `Shell Segment ${i + 1}`,
       });
     }
   }
 
-  return shellSegments;
+  const shellSegmentsWithVentHole = shellSegments.map((segment) => {
+    segment.shape = segment.shape.cut(
+      generateVentHoleCuttingTool({
+        ventHoleDiameter,
+        radius,
+        shellThickness,
+        depth,
+        shellSegmentVertexAngle,
+      })
+    );
+    return segment;
+  });
+
+  return shellSegmentsWithVentHole;
 };
+
+const generateVentHoleCuttingTool = ({
+  ventHoleDiameter,
+  radius,
+  shellThickness,
+  depth,
+  shellSegmentVertexAngle,
+}): SolidShape =>
+  drawCircle(ventHoleDiameter / 2)
+    .sketchOnPlane("XZ")
+    .extrude(shellThickness * 2)
+    .translateY(radius + shellThickness / 2)
+    .translateZ(depth / 2)
+    .rotate(-shellSegmentVertexAngle * 2) as SolidShape;

@@ -1,7 +1,12 @@
 import { DrumSchema } from "../components/ParameterSelector/inputSchema";
-import { ShapeArray, ShellConstants, SolidShape, WrappedShapeArray } from "./types";
+import {
+  ShapeArray,
+  ShellConstants,
+  SolidShape,
+  WrappedShapeArray,
+} from "./types";
 import { generateChamferCuttingTool, generateSegmentBody } from "./utils";
-import { makePlane } from "replicad";
+import { drawCircle, makePlane } from "replicad";
 
 export const generateBearingEdges = ({
   shellConstants,
@@ -42,7 +47,7 @@ export const generateBearingEdges = ({
       : shellThickness;
 
   updateProgress(0.25, "Generating base bearing edge segments");
-  
+
   const bottomBearingEdgeBase = generateBearingEdgeSegment({
     shellConstants,
     drum,
@@ -70,7 +75,10 @@ export const generateBearingEdges = ({
     bearingEdgesBottom: WrappedShapeArray;
   } = { bearingEdgesTop: [], bearingEdgesBottom: [] };
 
-  updateProgress(0.3, "Duplicating bearing edge segments and cut bearing edges");
+  updateProgress(
+    0.3,
+    "Duplicating bearing edge segments and cutting bearing edges"
+  );
 
   for (let i = 0; i < 360 / bearingEdgeVertexAngle; i++) {
     // Top Edges
@@ -165,7 +173,7 @@ export const generateBearingEdges = ({
       bottomOuterEdge.profileType === "customChamfer" &&
       bottomOuterEdge.customChamferAngle
     ) {
-      const cuttingTool = generateChamferCuttingTool({
+      const chamferCuttingTool = generateChamferCuttingTool({
         plane: makePlane("XZ"),
         startRadius:
           radius - bearingEdges.bottomBearingEdge.outerEdge.profileSize,
@@ -178,7 +186,8 @@ export const generateBearingEdges = ({
         edgeInner: false,
       });
 
-      bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.cut(cuttingTool);
+      bottomBearingEdgeProcessed =
+        bottomBearingEdgeProcessed.cut(chamferCuttingTool);
     }
     // Cut inner bearing edge
     if (bottomInnerEdge.profileType === "roundover") {
@@ -210,10 +219,38 @@ export const generateBearingEdges = ({
 
       bottomBearingEdgeProcessed = bottomBearingEdgeProcessed.cut(cuttingTool);
     }
+
     bearingEdgeModels.bearingEdgesBottom.push({
       shape: bottomBearingEdgeProcessed,
       name: `Bearing Edge Bottom ${i + 1}`,
     });
+  }
+
+  if (drum.drumType === "snare" && drum.snareBeds) {
+    updateProgress(0.35, "Cutting snare beds");
+    const { snareBedAngle, snareBedDepth, snareBedRadius } = drum.snareBeds;
+    const snareBedCuttingTools = [
+      generateSnareBedCuttingTool({
+        radius,
+        snareBedAngle,
+        snareBedDepth,
+        snareBedRadius,
+      }),
+      generateSnareBedCuttingTool({
+        radius,
+        snareBedAngle,
+        snareBedDepth,
+        snareBedRadius,
+      }).rotate(180),
+    ];
+
+    bearingEdgeModels.bearingEdgesBottom = bearingEdgeModels.bearingEdgesBottom.map(bearingEdge => {
+      snareBedCuttingTools.forEach(cuttingTool => {
+        const clonedTool = cuttingTool.clone()
+        bearingEdge.shape = bearingEdge.shape.cut(clonedTool)
+      })
+      return bearingEdge
+    })
   }
 
   return bearingEdgeModels;
@@ -296,5 +333,22 @@ const generateBearingEdgeSegment = ({
     bearingEdgeSegment
   );
 
-  return bearingEdgeSegmentWithTabPockets
+  return bearingEdgeSegmentWithTabPockets;
 };
+
+const generateSnareBedCuttingTool = ({
+  radius,
+  snareBedRadius,
+  snareBedAngle,
+  snareBedDepth,
+}): SolidShape =>
+  drawCircle(snareBedRadius)
+    .sketchOnPlane("XZ")
+    .extrude(100)
+    .translateY(radius + 25)
+    .translateZ(-snareBedRadius + snareBedDepth)
+    .rotate(
+      -snareBedAngle,
+      [0, radius, snareBedDepth],
+      [1, 0, 0]
+    ) as SolidShape;
