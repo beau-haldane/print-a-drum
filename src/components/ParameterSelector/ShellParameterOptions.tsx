@@ -1,11 +1,33 @@
 import React from "react";
 import { ParameterAccordion } from "./ParameterAccordion";
-import { TextInput } from "./Input";
+import { SelectInput, TextInput } from "./Input";
 
-export const ShellParameterOptions = ({ printableDrum, register, errors, style }) => {
+export const ShellParameterOptions = ({
+  printableDrum,
+  register,
+  errors,
+  style,
+}) => {
   return (
     <ParameterAccordion title="Shell Settings">
       <div style={style}>
+        <SelectInput
+          label="Drum Type"
+          register={register}
+          registerTo="drumType"
+          inputOptions={[
+            {
+              value: 'snare',
+              label: "Snare Drum",
+            },
+            {
+              value: 'tom',
+              label: "Tom Tom",
+            },
+          ]}
+          errors={errors?.lugs?.lugRows}
+          initialValue={printableDrum.lugs.lugRows}
+        />
         <TextInput
           label="Fitment Tolerance"
           initialValue={printableDrum.fitmentTolerance}
@@ -40,6 +62,13 @@ export const ShellParameterOptions = ({ printableDrum, register, errors, style }
           register={register}
           registerTo="shell.lugsPerSegment"
           errors={errors?.shell?.lugsPerSegment}
+        />
+        <TextInput
+          label="Vent Hole Diameter"
+          initialValue={printableDrum.shell.ventHoleDiameter}
+          register={register}
+          registerTo="shell.ventHoleDiameter"
+          errors={errors?.shell?.ventHoleDiameter}
         />
       </div>
     </ParameterAccordion>
