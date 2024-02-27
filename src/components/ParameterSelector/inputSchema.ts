@@ -1,5 +1,20 @@
 import { z } from "zod";
 
+const snareBedSchema = z.optional(
+  z.object({
+    snareBedAngle: z.coerce
+      .number()
+      .min(0, { message: "Snare bed angle cannot be negative" })
+      .max(45, {
+        message: "Snare bed angle cannot be greater than 45 degrees",
+      }),
+    snareBedRadius: z.coerce.number().nonnegative(),
+    snareBedDepth: z.coerce.number().nonnegative().max(30, {
+      message: "Snare bed depth cannot exceed the depth of the bearing edges",
+    }),
+  })
+);
+
 const profileTypeSchema = z.enum([
   "roundover",
   "chamfer",
@@ -47,6 +62,10 @@ const shellSchemaObject = z.object({
     .number()
     .min(1, { message: "Must have at least 1 lug per segment" })
     .max(2, { message: "No more than 2 lugs per segment" }),
+  ventHoleDiameter: z.coerce
+    .number()
+    .nonnegative()
+    .max(50, { message: "Cannot be greater than 50mm" }),
 });
 
 const lugSchemaObject = z.object({
@@ -76,6 +95,7 @@ const bearingEdgeSchemaObject = z.object({
 });
 
 export const drumSchemaObject = z.object({
+  drumType: z.enum(["tom", "snare"]),
   fitmentTolerance: z.coerce
     .number()
     .nonnegative({ message: "Tolerance cannot be negative" })
@@ -83,6 +103,7 @@ export const drumSchemaObject = z.object({
   shell: shellSchemaObject,
   lugs: lugSchemaObject,
   bearingEdges: bearingEdgeSchemaObject,
+  snareBeds: snareBedSchema,
 });
 
 export type DrumSchema = z.infer<typeof drumSchemaObject>;

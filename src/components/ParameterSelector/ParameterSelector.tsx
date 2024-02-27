@@ -5,6 +5,7 @@ import { DrumSchema, drumSchemaObject } from "./inputSchema";
 import { ShellParameterOptions } from "./ShellParameterOptions";
 import { LugParameterOptions } from "./LugParameterOptions";
 import { BearingEdgeParameterOptions } from "./BearingEdgeParameterOptions";
+import { SnareParameterOptions } from "./SnareParameterOptions";
 
 export const ParameterSelector = ({ printableDrum, generateModel }) => {
   const {
@@ -21,6 +22,12 @@ export const ParameterSelector = ({ printableDrum, generateModel }) => {
     generateModel(drumSchema);
   };
 
+  const onError = (arg1, arg2) => {
+    console.log('error: ', arg1, arg2)
+  }
+
+  const drumType = watch("drumType");
+
   const accordionStyle = {
     display: "flex",
     flexDirection: "column",
@@ -29,7 +36,7 @@ export const ParameterSelector = ({ printableDrum, generateModel }) => {
 
   return (
     <form
-      onSubmit={handleSubmit(onSubmit)}
+      onSubmit={handleSubmit(onSubmit, onError)}
       style={{
         display: "flex",
         justifyContent: "space-between",
@@ -78,6 +85,14 @@ export const ParameterSelector = ({ printableDrum, generateModel }) => {
           watch={watch}
           style={accordionStyle}
         />
+        {drumType === 'snare' && (
+          <SnareParameterOptions 
+            printableDrum={printableDrum}
+            register={register}
+            errors={errors}
+            style={accordionStyle}
+          />
+        )}
       </div>
       <button
         type="submit"
