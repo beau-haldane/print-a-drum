@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Markdown from "markdown-to-jsx";
 
-export const Documentation = () => {
+export const Documentation = ({style}) => {
   const [shellSettings, setShellSettings] = useState("");
 
   useEffect(() => {
@@ -17,16 +17,7 @@ export const Documentation = () => {
 
   return (
     <Markdown
-      style={{
-        backgroundColor: "#FFF",
-        margin: "10px 0px",
-        borderRadius: "0 5px 5px 0",
-        padding: "20px 40px",
-        minWidth: "600px",
-        maxWidth: "calc(100vw - (370px * 2))",
-        overflowY: "scroll",
-        scrollbarGutter: "stable both-edges",
-      }}
+      style={style}
     >
       {shellSettings}
     </Markdown>

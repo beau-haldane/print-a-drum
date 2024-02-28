@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { DrumSchema, drumSchemaObject } from "./inputSchema";
@@ -7,12 +7,14 @@ import { LugParameterOptions } from "./LugParameterOptions";
 import { BearingEdgeParameterOptions } from "./BearingEdgeParameterOptions";
 import { SnareParameterOptions } from "./SnareParameterOptions";
 import { TailSpin } from "react-loader-spinner";
+import { Documentation } from "../Documentation";
 
 export const ParameterSelector = ({
   printableDrum,
   generateModel,
   loading,
 }) => {
+  const [showDocumentation, setShowDocumentation] = useState(false);
   const {
     watch,
     register,
@@ -40,91 +42,134 @@ export const ParameterSelector = ({
   };
 
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit, onError)}
+    <div
       style={{
         display: "flex",
-        justifyContent: "space-between",
         fontFamily: "Roboto",
-        flexDirection: "column",
-        width: "350px",
-        gap: "10px",
-        padding: "10px",
+        flexDirection: "row",
         position: "absolute",
         margin: "20px",
         zIndex: 100,
-        backgroundColor: "#FFF",
-        height: "calc(100vh - 60px)",
+        height: "calc(100vh - 40px)",
         borderRadius: "5px",
       }}
     >
-      <div
+      <form
+        onSubmit={handleSubmit(onSubmit, onError)}
         style={{
-          overflowY: "scroll",
-          height: "100%",
-          padding: "5px",
-          scrollbarGutter: "stable both-edges",
           display: "flex",
+          justifyContent: "space-between",
+          fontFamily: "Roboto",
           flexDirection: "column",
-          alignItems: "center",
+          width: "350px",
+          gap: "10px",
+          padding: "10px",
+          zIndex: 100,
+          backgroundColor: "#FFF",
+          borderRadius: "5px",
+          border: "1px solid #f0f0f0",
         }}
       >
-        <h1 style={{ lineHeight: 1, margin: "10px 10px 20px 10px" }}>
-          Print-A-Drum
-        </h1>
-        <ShellParameterOptions
-          printableDrum={printableDrum}
-          register={register}
-          errors={errors}
-          style={accordionStyle}
-        />
-        <LugParameterOptions
-          printableDrum={printableDrum}
-          register={register}
-          errors={errors}
-          watch={watch}
-          style={accordionStyle}
-        />
-        <BearingEdgeParameterOptions
-          printableDrum={printableDrum}
-          register={register}
-          errors={errors}
-          watch={watch}
-          style={accordionStyle}
-        />
-        {drumType === "snare" && (
-          <SnareParameterOptions
+        <div
+          style={{
+            overflowY: "scroll",
+            height: "100%",
+            padding: "5px",
+            scrollbarGutter: "stable both-edges",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+          }}
+        >
+          <h1 style={{ lineHeight: 1, margin: "10px" }}>Print-A-Drum</h1>
+          <p>
+            {!showDocumentation && <>Need help? </>}
+            <a
+              onClick={() => setShowDocumentation(!showDocumentation)}
+              style={{
+                textDecoration: "underline",
+              }}
+            >
+              {showDocumentation
+                ? `Hide documentation <`
+                : `See our documentation >`}
+            </a>
+          </p>
+          <ShellParameterOptions
             printableDrum={printableDrum}
             register={register}
             errors={errors}
             style={accordionStyle}
           />
-        )}
-      </div>
-      <button
-        type="submit"
-        style={{ height: "2em", fontSize: "1em", fontWeight: 550 }}
-        disabled={loading}
-      >
-        {loading ? (
-          <TailSpin
-            visible={true}
-            height="20"
-            width="20"
-            color="#000"
-            ariaLabel="tail-spin-loading"
-            radius="1"
-            wrapperStyle={{
-              width: "100%",
-              display: "flex",
-              justifyContent: "center",
-            }}
-            wrapperClass=""
+          <LugParameterOptions
+            printableDrum={printableDrum}
+            register={register}
+            errors={errors}
+            watch={watch}
+            style={accordionStyle}
           />
-        ) : (
-          "Generate"
-        )}
-      </button>
-    </form>
+          <BearingEdgeParameterOptions
+            printableDrum={printableDrum}
+            register={register}
+            errors={errors}
+            watch={watch}
+            style={accordionStyle}
+          />
+          {drumType === "snare" && (
+            <SnareParameterOptions
+              printableDrum={printableDrum}
+              register={register}
+              errors={errors}
+              style={accordionStyle}
+            />
+          )}
+        </div>
+        <button
+          type="submit"
+          style={{ height: "2em", fontSize: "1em", fontWeight: 550 }}
+          disabled={loading}
+        >
+          {loading ? (
+            <TailSpin
+              visible={true}
+              height="20"
+              width="20"
+              color="#000"
+              ariaLabel="tail-spin-loading"
+              radius="1"
+              wrapperStyle={{
+                width: "100%",
+                display: "flex",
+                justifyContent: "center",
+              }}
+              wrapperClass=""
+            />
+          ) : (
+            "Generate"
+          )}
+        </button>
+      </form>
+
+      {showDocumentation && (
+        <div
+          style={{
+            backgroundColor: "#FFF",
+            margin: "10px 0px",
+            borderRadius: "0 5px 5px 0",
+            padding: "20px",
+            minWidth: "600px",
+            maxWidth: "calc(100vw - (370px * 2))",
+          }}
+        >
+          <Documentation
+            style={{
+              height: "calc(100% - 20px)",
+              overflowY: "scroll",
+              scrollbarGutter: "stable both-edges",
+            }}
+          />
+        </div>
+      )}
+    </div>
   );
 };
