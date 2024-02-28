@@ -10,4 +10,5 @@ export default defineConfig({
   server: {
     port: 4444,
   },
+  base: '/print-a-drum/'
 });
