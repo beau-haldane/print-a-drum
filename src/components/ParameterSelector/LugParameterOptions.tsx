@@ -31,13 +31,6 @@ export const LugParameterOptions = ({
           errors={errors?.lugs?.lugType}
           initialValue={printableDrum.lugs.lugType}
         />
-        <TextInput
-          label="Lugs"
-          initialValue={printableDrum.lugs.lugNumber}
-          register={register}
-          registerTo="lugs.lugNumber"
-          errors={errors?.lugs?.lugNumber}
-        />
         <SelectInput
           label="Lug Rows"
           register={register}
@@ -75,7 +68,7 @@ export const LugParameterOptions = ({
             />
           ))}
         <TextInput
-          label="Lug Hole Diameter"
+          label="Lug Screw Hole Diameter"
           initialValue={printableDrum.lugs.lugHoleDiameter}
           register={register}
           registerTo="lugs.lugHoleDiameter"
