@@ -17,6 +17,7 @@ export const SnareParameterOptions = ({
           register={register}
           registerTo="snareBeds.snareBedAngle"
           errors={errors?.snareBeds?.snareBedAngle}
+          unitSuffix="°"
         />
         <TextInput
           label="Snare Bed Radius"
@@ -24,6 +25,7 @@ export const SnareParameterOptions = ({
           register={register}
           registerTo="snareBeds.snareBedRadius"
           errors={errors?.snareBeds?.snareBedRadius}
+          unitSuffix="mm"
         />
         <TextInput
           label="Snare Bed Depth"
@@ -31,6 +33,7 @@ export const SnareParameterOptions = ({
           register={register}
           registerTo="snareBeds.snareBedDepth"
           errors={errors?.snareBeds?.snareBedDepth}
+          unitSuffix="mm"
         />
       </div>
     </ParameterAccordion>

@@ -122,13 +122,14 @@ const BearingEdgeInputs = ({
           errors={
             errors?.bearingEdges?.[bearingEdgeLocation]?.outerEdge?.profileSize
           }
+          unitSuffix="mm"
         />
       )}
       {outerProfile === "customChamfer" && (
         <TextInput
           label={`Outer ${capitalizeFirstLetter(outerProfile)} Angle`}
           initialValue={
-            printableDrum.bearingEdges[bearingEdgeLocation].outerEdge
+            printableDrum.bearingEdges[bearingEdgeLocation].outerEdge.customChamferAngle
           }
           register={register}
           registerTo={`bearingEdges.${bearingEdgeLocation}.outerEdge.customChamferAngle`}
@@ -136,6 +137,7 @@ const BearingEdgeInputs = ({
             errors?.bearingEdges?.[bearingEdgeLocation]?.outerEdge
               ?.customChamferAngle
           }
+          unitSuffix="°"
         />
       )}
       <SelectInput
@@ -163,6 +165,7 @@ const BearingEdgeInputs = ({
             errors?.bearingEdges?.[bearingEdgeLocation]?.innerEdge
               ?.customChamferAngle
           }
+          unitSuffix="°"
         />
       )}
       <TextInput
@@ -171,6 +174,7 @@ const BearingEdgeInputs = ({
         register={register}
         registerTo={`bearingEdges.${bearingEdgeLocation}.thickness`}
         errors={errors?.bearingEdges?.[bearingEdgeLocation]?.thickness}
+        unitSuffix="mm"
       />
     </>
   );
