@@ -57,8 +57,8 @@ export default function ReplicadApp() {
       ventHoleDiameter: 10,
     },
     lugs: {
-      lugType: "doublePoint",
-      lugRows: 2,
+      lugType: "singlePoint",
+      lugRows: 1,
       lugNumber: 8,
       lugHoleSpacing: 20,
       lugHoleDiameter: 5,
