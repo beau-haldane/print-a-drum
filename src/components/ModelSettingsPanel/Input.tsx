@@ -7,6 +7,7 @@ const InputContainer = ({ label, errors, children }) => (
       display: "flex",
       flexDirection: "column",
       alignItems: "end",
+      position: "relative",
     }}
   >
     <div
@@ -35,6 +36,7 @@ export const TextInput = ({
   register,
   registerTo,
   errors,
+  unitSuffix = '',
 }) => {
   const [inputValue, setInputValue] = useState(initialValue || "");
   const handleChange = (event) => {
@@ -53,6 +55,11 @@ export const TextInput = ({
           value={inputValue}
           onChange={handleChange}
         />
+        {unitSuffix && (
+          <div style={{ fontSize: "12px", position: "absolute", right: 5 }}>
+            {unitSuffix}
+          </div>
+        )}
       </InputContainer>
     </>
   );
