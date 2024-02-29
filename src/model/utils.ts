@@ -1,7 +1,8 @@
 import { Plane, Point2D, draw } from "replicad";
 import { SolidShape } from "./types";
 
-export const inchesToMillimeters = (inch: number) => inch * 25.4;
+export const inchesToMillimeters = (inches: number) => inches * 25.4;
+export const millimetersToInches = (millimeters: number) => millimeters / 25.4;
 
 export const calculateXY = (
   hypotenuseLength: number,
