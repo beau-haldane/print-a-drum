@@ -6,8 +6,8 @@ import { wrap, proxy } from "comlink";
 import PresentationViewer from "./replicad-studio-components/PresentationViewer.jsx";
 import JSZip from "jszip";
 import { fileSave } from "browser-fs-access";
-import { ParameterSelector } from "./components/ParameterSelector/ParameterSelector.tsx";
-import { DrumSchema } from "./components/ParameterSelector/inputSchema.ts";
+import { ModelSettingsPanel } from "./components/ModelSettingsPanel/ModelSettingsPanel.tsx";
+import { DrumSchema } from "./components/ModelSettingsPanel/inputSchema.ts";
 import { TailSpin } from "react-loader-spinner";
 
 // @ts-expect-error - Property 'DefaultUp' does not exist on type 'typeof Object3D', however this code executes fine and is necessary to set the correct rotational axis
@@ -135,7 +135,7 @@ export default function ReplicadApp() {
 
   return (
     <>
-      <ParameterSelector
+      <ModelSettingsPanel
         printableDrum={printableDrum}
         generateModel={generateModel}
         loading={loading}

@@ -9,7 +9,7 @@ import { SnareParameterOptions } from "./SnareParameterOptions";
 import { TailSpin } from "react-loader-spinner";
 import { Documentation } from "../Documentation";
 
-export const ParameterSelector = ({
+export const ModelSettingsPanel = ({
   printableDrum,
   generateModel,
   loading,
@@ -39,6 +39,11 @@ export const ParameterSelector = ({
     display: "flex",
     flexDirection: "column",
     gap: "4px",
+  };
+
+  const linkStyle = {
+    textDecoration: "underline",
+    cursor: "pointer",
   };
 
   return (
@@ -82,18 +87,18 @@ export const ParameterSelector = ({
           }}
         >
           <h1 style={{ lineHeight: 1, margin: "10px" }}>Print-A-Drum</h1>
-          <p>
-            {!showDocumentation && <>Need help? </>}
-            <a
-              onClick={() => setShowDocumentation(!showDocumentation)}
-              style={{
-                textDecoration: "underline",
-              }}
-            >
-              {showDocumentation
-                ? `Hide documentation <`
-                : `See our documentation >`}
-            </a>
+          <p style={{marginTop: 0}}>
+            {!showDocumentation && (
+              <>
+                Need help?{" "}
+                <a
+                  onClick={() => setShowDocumentation(!showDocumentation)}
+                  style={linkStyle}
+                >
+                  {`See documentation >`}
+                </a>
+              </>
+            )}
           </p>
           <ShellParameterOptions
             printableDrum={printableDrum}
@@ -161,6 +166,15 @@ export const ParameterSelector = ({
             maxWidth: "calc(100vw - (370px * 2))",
           }}
         >
+          <div style={{margin: "0 0 10px 15px"}}>
+            <a
+              onClick={() => setShowDocumentation(!showDocumentation)}
+              style={linkStyle}
+            >
+              {`< Hide documentation`}
+            </a>
+          </div>
+
           <Documentation
             style={{
               height: "calc(100% - 20px)",
