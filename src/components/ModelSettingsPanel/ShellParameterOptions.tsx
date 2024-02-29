@@ -11,12 +11,13 @@ export const ShellParameterOptions = ({
   return (
     <ParameterAccordion title="Shell Settings">
       <div style={style}>
-      <TextInput
+        <TextInput
           label="Fitment Tolerance"
           initialValue={printableDrum.fitmentTolerance}
           register={register}
           registerTo="fitmentTolerance"
           errors={errors?.fitmentTolerance}
+          unitSuffix="mm"
         />
         <SelectInput
           label="Drum Type"
@@ -24,11 +25,11 @@ export const ShellParameterOptions = ({
           registerTo="drumType"
           inputOptions={[
             {
-              value: 'snare',
+              value: "snare",
               label: "Snare Drum",
             },
             {
-              value: 'tom',
+              value: "tom",
               label: "Tom Tom",
             },
           ]}
@@ -41,6 +42,7 @@ export const ShellParameterOptions = ({
           register={register}
           registerTo="shell.diameterInches"
           errors={errors?.shell?.diameterInches}
+          unitSuffix="inches"
         />
         <TextInput
           label="Shell Depth"
@@ -48,6 +50,7 @@ export const ShellParameterOptions = ({
           register={register}
           registerTo="shell.depthInches"
           errors={errors?.shell?.depthInches}
+          unitSuffix="inches"
         />
         <TextInput
           label="Lugs"
@@ -62,6 +65,7 @@ export const ShellParameterOptions = ({
           register={register}
           registerTo="shell.shellThickness"
           errors={errors?.shell?.shellThickness}
+          unitSuffix="mm"
         />
         <TextInput
           label="Lugs Per Segment"
@@ -76,6 +80,7 @@ export const ShellParameterOptions = ({
           register={register}
           registerTo="shell.ventHoleDiameter"
           errors={errors?.shell?.ventHoleDiameter}
+          unitSuffix="mm"
         />
       </div>
     </ParameterAccordion>

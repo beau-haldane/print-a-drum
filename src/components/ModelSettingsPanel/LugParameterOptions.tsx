@@ -55,16 +55,18 @@ export const LugParameterOptions = ({
             register={register}
             registerTo="lugs.lugHoleSpacing"
             errors={errors?.lugs?.lugHoleSpacing}
+            unitSuffix="mm"
           />
         )}
         {lugRows === 2 ||
-          ("2" && (
+          (lugRows === "2" && (
             <TextInput
               label="Lug Distance From Edge"
               initialValue={printableDrum.lugs.lugHoleDistanceFromEdge}
               register={register}
               registerTo="lugs.lugHoleDistanceFromEdge"
               errors={errors?.lugs?.lugHoleDistanceFromEdge}
+              unitSuffix="mm"
             />
           ))}
         <TextInput
@@ -73,6 +75,7 @@ export const LugParameterOptions = ({
           register={register}
           registerTo="lugs.lugHoleDiameter"
           errors={errors?.lugs?.lugHoleDiameter}
+          unitSuffix="mm"
         />
         <TextInput
           label="Lug Hole Pocket Diameter"
@@ -80,6 +83,7 @@ export const LugParameterOptions = ({
           register={register}
           registerTo="lugs.lugHolePocketDiameter"
           errors={errors?.lugs?.lugHolePocketDiameter}
+          unitSuffix="mm"
         />
         <TextInput
           label="Lug Hole Pocket Depth"
@@ -87,6 +91,7 @@ export const LugParameterOptions = ({
           register={register}
           registerTo="lugs.lugHolePocketDepth"
           errors={errors?.lugs?.lugHolePocketDepth}
+          unitSuffix="mm"
         />
       </div>
     </ParameterAccordion>
