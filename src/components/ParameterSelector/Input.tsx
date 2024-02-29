@@ -69,13 +69,13 @@ export const SelectInput = ({
   return (
     <>
       <InputContainer label={label} errors={errors}>
-        <select {...register(registerTo)} style={{ width: "108px" }}>
+        <select
+          {...register(registerTo)}
+          defaultValue={initialValue}
+          style={{ width: "108px" }}
+        >
           {inputOptions.map((option, i) => {
-            return option.value === initialValue ? (
-              <option selected value={option.value} key={i}>
-                {option.label}
-              </option>
-            ) : (
+            return (
               <option value={option.value} key={i}>
                 {option.label}
               </option>
@@ -86,4 +86,3 @@ export const SelectInput = ({
     </>
   );
 };
-
