@@ -8,6 +8,7 @@ import { BearingEdgeParameterOptions } from "./BearingEdgeParameterOptions";
 import { SnareParameterOptions } from "./SnareParameterOptions";
 import { TailSpin } from "react-loader-spinner";
 import { Documentation } from "../Documentation";
+import { UnitSelector } from "./UnitSelector";
 
 export const ModelSettingsPanel = ({
   printableDrum,
@@ -26,7 +27,8 @@ export const ModelSettingsPanel = ({
   });
 
   const onSubmit: SubmitHandler<DrumSchema> = (drumSchema) => {
-    generateModel(drumSchema);
+    console.log(drumSchema);
+    // generateModel(drumSchema);
   };
 
   const onError = (arg1, arg2) => {
@@ -82,12 +84,14 @@ export const ModelSettingsPanel = ({
             padding: "5px",
             scrollbarGutter: "stable both-edges",
             display: "flex",
+            gap: "10px",
+            paddingTop: "10px",
             flexDirection: "column",
             alignItems: "center",
           }}
         >
-          <h1 style={{ lineHeight: 1, margin: "10px" }}>Print-A-Drum</h1>
-          <p style={{marginTop: 0}}>
+          <h1 style={{ lineHeight: 1, margin: 0 }}>Print-A-Drum</h1>
+          <p style={{ margin: 0 }}>
             {!showDocumentation && (
               <>
                 Need help?{" "}
@@ -100,34 +104,37 @@ export const ModelSettingsPanel = ({
               </>
             )}
           </p>
-          <ShellParameterOptions
-            printableDrum={printableDrum}
-            register={register}
-            errors={errors}
-            style={accordionStyle}
-          />
-          <LugParameterOptions
-            printableDrum={printableDrum}
-            register={register}
-            errors={errors}
-            watch={watch}
-            style={accordionStyle}
-          />
-          <BearingEdgeParameterOptions
-            printableDrum={printableDrum}
-            register={register}
-            errors={errors}
-            watch={watch}
-            style={accordionStyle}
-          />
-          {drumType === "snare" && (
-            <SnareParameterOptions
+          <UnitSelector />
+          <div>
+            <ShellParameterOptions
               printableDrum={printableDrum}
               register={register}
               errors={errors}
               style={accordionStyle}
             />
-          )}
+            <LugParameterOptions
+              printableDrum={printableDrum}
+              register={register}
+              errors={errors}
+              watch={watch}
+              style={accordionStyle}
+            />
+            <BearingEdgeParameterOptions
+              printableDrum={printableDrum}
+              register={register}
+              errors={errors}
+              watch={watch}
+              style={accordionStyle}
+            />
+            {drumType === "snare" && (
+              <SnareParameterOptions
+                printableDrum={printableDrum}
+                register={register}
+                errors={errors}
+                style={accordionStyle}
+              />
+            )}
+          </div>
         </div>
         <button
           type="submit"
@@ -166,7 +173,7 @@ export const ModelSettingsPanel = ({
             maxWidth: "calc(100vw - (370px * 2))",
           }}
         >
-          <div style={{margin: "0 0 10px 15px"}}>
+          <div style={{ margin: "0 0 10px 15px" }}>
             <a
               onClick={() => setShowDocumentation(!showDocumentation)}
               style={linkStyle}
