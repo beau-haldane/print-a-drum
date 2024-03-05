@@ -9,6 +9,8 @@ import { fileSave } from "browser-fs-access";
 import { ModelSettingsPanel } from "./components/ModelSettingsPanel/ModelSettingsPanel.tsx";
 import { DrumSchema } from "./components/ModelSettingsPanel/inputSchema.ts";
 import { TailSpin } from "react-loader-spinner";
+import { Provider } from "react-redux";
+import { store } from "./state/store.ts";
 
 // @ts-expect-error - Property 'DefaultUp' does not exist on type 'typeof Object3D', however this code executes fine and is necessary to set the correct rotational axis
 THREE.Object3D.DefaultUp.set(0, 0, 1);
@@ -135,11 +137,13 @@ export default function ReplicadApp() {
 
   return (
     <>
-      <ModelSettingsPanel
-        printableDrum={printableDrum}
-        generateModel={generateModel}
-        loading={loading}
-      />
+      <Provider store={store}>
+        <ModelSettingsPanel
+          printableDrum={printableDrum}
+          generateModel={generateModel}
+          loading={loading}
+        />
+      </Provider>
       <section style={{ height: "100vh" }}>
         <button
           onClick={() => downloadModel()}
