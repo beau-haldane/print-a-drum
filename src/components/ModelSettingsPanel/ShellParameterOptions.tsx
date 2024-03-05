@@ -18,6 +18,7 @@ export const ShellParameterOptions = ({
           registerTo="fitmentTolerance"
           errors={errors?.fitmentTolerance}
           unitSuffix="mm"
+          allowConvert={false}
         />
         <SelectInput
           label="Drum Type"
@@ -43,6 +44,7 @@ export const ShellParameterOptions = ({
           registerTo="shell.diameterInches"
           errors={errors?.shell?.diameterInches}
           unitSuffix="inches"
+          allowConvert={false}
         />
         <TextInput
           label="Shell Depth"
@@ -51,6 +53,7 @@ export const ShellParameterOptions = ({
           registerTo="shell.depthInches"
           errors={errors?.shell?.depthInches}
           unitSuffix="inches"
+          allowConvert={false}
         />
         <TextInput
           label="Lugs"
