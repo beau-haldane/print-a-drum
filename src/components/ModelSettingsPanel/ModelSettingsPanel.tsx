@@ -13,6 +13,7 @@ export const ModelSettingsPanel = ({
   printableDrum,
   generateModel,
   loading,
+  style,
 }) => {
   const [showDocumentation, setShowDocumentation] = useState(false);
   const {
@@ -52,11 +53,7 @@ export const ModelSettingsPanel = ({
         display: "flex",
         fontFamily: "Roboto",
         flexDirection: "row",
-        position: "absolute",
-        margin: "20px",
-        zIndex: 100,
-        height: "calc(100vh - 40px)",
-        borderRadius: "5px",
+        ...style,
       }}
     >
       <form
@@ -87,7 +84,7 @@ export const ModelSettingsPanel = ({
           }}
         >
           <h1 style={{ lineHeight: 1, margin: "10px" }}>Print-A-Drum</h1>
-          <p style={{marginTop: 0}}>
+          <p style={{ marginTop: 0 }}>
             {!showDocumentation && (
               <>
                 Need help?{" "}
@@ -166,7 +163,7 @@ export const ModelSettingsPanel = ({
             maxWidth: "calc(100vw - (370px * 2))",
           }}
         >
-          <div style={{margin: "0 0 10px 15px"}}>
+          <div style={{ margin: "0 0 10px 15px" }}>
             <a
               onClick={() => setShowDocumentation(!showDocumentation)}
               style={linkStyle}
