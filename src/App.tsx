@@ -10,8 +10,7 @@ import { ModelSettingsPanel } from "./components/ModelSettingsPanel/ModelSetting
 import { DrumSchema } from "./components/ModelSettingsPanel/inputSchema.ts";
 import { TailSpin } from "react-loader-spinner";
 
-// @ts-expect-error - Property 'DefaultUp' does not exist on type 'typeof Object3D', however this code executes fine and is necessary to set the correct rotational axis
-THREE.Object3D.DefaultUp.set(0, 0, 1);
+THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 
 const cad = wrap(new cadWorker());
 
