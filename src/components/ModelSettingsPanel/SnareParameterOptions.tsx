@@ -1,6 +1,6 @@
 import React from "react";
 import { ParameterAccordion } from "./ParameterAccordion";
-import { SelectInput, TextInput } from "./Input";
+import { TextInput } from "./Input";
 
 export const SnareParameterOptions = ({
   printableDrum,
