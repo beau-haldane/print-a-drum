@@ -1,4 +1,3 @@
-import { Segment } from "@react-three/drei";
 import { DrumSchema } from "../components/ModelSettingsPanel/inputSchema";
 import {
   ShapeArray,
@@ -45,7 +44,7 @@ export const generateShellSegment = ({
   const totalVertextAngle =
     shellConstants.shellSegmentVertexAngle * lugsPerSegment;
 
-  const generateLugHoles = (lugsPerSegment, lugHolesDistance = 0) => {
+  const generateLugHoles = (lugsPerSegment: number, lugHolesDistance = 0) => {
     let lugHole = drawCircle(lugHoleDiameter / 2)
       .sketchOnPlane("XZ", -radius)
       .extrude(shellThickness + 10) as SolidShape;
@@ -235,6 +234,12 @@ const generateVentHoleCuttingTool = ({
   shellThickness,
   depth,
   shellSegmentVertexAngle,
+}: {
+  ventHoleDiameter: number;
+  radius: number;
+  shellThickness: number;
+  depth: number;
+  shellSegmentVertexAngle: number;
 }): SolidShape =>
   drawCircle(ventHoleDiameter / 2)
     .sketchOnPlane("XZ")
