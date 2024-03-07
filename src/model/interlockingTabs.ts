@@ -1,4 +1,4 @@
-import { DrumSchema } from "../components/ParameterSelector/inputSchema";
+import { DrumSchema } from "../components/ModelSettingsPanel/inputSchema";
 import { ShapeArray, ShellConstants, WrappedShapeArray } from "./types";
 import { generateFilletedSegmentBody } from "./utils";
 
@@ -24,6 +24,7 @@ export const generateInterlockingTabs = ({
   const { lugNumber } = drum.lugs;
   const { diameterInches } = drum.shell;
   const tabsPerSegment = diameterInches >= 12 ? 2 : 1;
+  const interlockingTabPocketHeight = interlockingTabHeight + 0.5;
 
   // Generate Tabs
   const interlockingTab = generateFilletedSegmentBody(
@@ -38,7 +39,7 @@ export const generateInterlockingTabs = ({
     tabOuterRadius + fitmentTolerance,
     shellSegmentVertexAngle / (2 * tabsPerSegment) + tabFitmentToleranceDegrees,
     tabThickness + fitmentTolerance * 2,
-    interlockingTabHeight,
+    interlockingTabPocketHeight,
     shellSegmentPlane
   );
 
@@ -71,13 +72,13 @@ export const generateInterlockingTabs = ({
     tabsAndPockets.interlockingTabPockets.push(
       interlockingTabPocket
         .clone()
-        .translateZ(shellSegmentHeight - interlockingTabHeight / 2)
+        .translateZ(shellSegmentHeight - interlockingTabPocketHeight / 2)
         .rotate(rotationAngle)
     );
     tabsAndPockets.interlockingTabPockets.push(
       interlockingTabPocket
         .clone()
-        .translateZ(-(interlockingTabHeight / 2))
+        .translateZ(-(interlockingTabPocketHeight / 2))
         .rotate(rotationAngle)
     );
   }
