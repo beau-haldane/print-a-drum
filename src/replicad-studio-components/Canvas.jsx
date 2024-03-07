@@ -6,12 +6,6 @@ import LoadingScreen from "./LoadingScreen.jsx";
 const StyledCanvas = styled(ThreeCanvas)`
   width: 100%;
   height: 100%;
-  background: rgb(250, 250, 250);
-  background: radial-gradient(
-    circle,
-    rgba(250, 250, 250, 1) 0%,
-    rgba(208, 212, 213, 1) 100%
-  );
 `;
 
 export default function Canvas({ children, ...props }) {
