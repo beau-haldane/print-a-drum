@@ -1,4 +1,4 @@
-import { DrumSchema } from "../components/ParameterSelector/inputSchema";
+import { DrumSchema } from "../components/ModelSettingsPanel/inputSchema";
 import {
   ShapeArray,
   ShellConstants,

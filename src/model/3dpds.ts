@@ -3,7 +3,7 @@ import { generateInterlockingTabs } from "./interlockingTabs";
 import { generateBearingEdges } from "./bearingEdges";
 import { ShellConstants } from "./types";
 import { getShellConstants } from "./constants";
-import { DrumSchema } from "../components/ParameterSelector/inputSchema";
+import { DrumSchema } from "../components/ModelSettingsPanel/inputSchema";
 
 export const generate3DPSD = (
   drum: DrumSchema,

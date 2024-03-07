@@ -1,5 +1,5 @@
 import { Segment } from "@react-three/drei";
-import { DrumSchema } from "../components/ParameterSelector/inputSchema";
+import { DrumSchema } from "../components/ModelSettingsPanel/inputSchema";
 import {
   ShapeArray,
   ShellConstants,

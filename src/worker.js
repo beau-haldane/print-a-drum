@@ -2,7 +2,7 @@ import opencascade from "replicad-opencascadejs/src/replicad_single.js";
 import opencascadeWasm from "replicad-opencascadejs/src/replicad_single.wasm?url";
 import { setOC } from "replicad";
 import { expose } from "comlink";
-import { generate3DPSD } from "./model/3dpsd";
+import { generate3DPSD } from "./model/3dpds";
 import * as replicad from "replicad";
 
 let loaded = false;
