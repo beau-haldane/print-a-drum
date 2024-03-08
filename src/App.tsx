@@ -15,10 +15,8 @@ import { ModelViewer } from "./components/ModelViewer.tsx";
 import { Provider } from "react-redux";
 import { store } from "./state/store.ts";
 import LZString from "lz-string";
-import { TailSpin } from "react-loader-spinner";
 
 THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
-
 
 const cad = wrap(new cadWorker());
 
@@ -48,9 +46,7 @@ export default function ReplicadApp() {
     progress: 0,
     messages: [],
   });
-  const [printableDrum, setPrintableDrum] = useState<DrumSchema | null>(
-    null
-  );
+  const [printableDrum, setPrintableDrum] = useState<DrumSchema | null>(null);
 
   const updateModelProgress = (progress: number, message?: string) => {
     const modelProgressState = { ...modelProgress };
@@ -113,27 +109,28 @@ export default function ReplicadApp() {
         )`,
       }}
     >
-      <Provider store={store}><ModelSettingsPanel
-        printableDrum={printableDrum}
-        generateModel={generateModel}
-        loading={loading}
-        style={{
-          width: "20%",
-          margin: "20px",
-          zIndex: 100,
-          height: "calc(100vh - 40px)",
-          borderRadius: "5px",
-        }}
-      />
-      <ModelViewer
-        printableDrum={printableDrum}
-        downloadModel={downloadModel}
-        loading={loading}
-        model={model}
-        modelProgress={modelProgress}
-        style={{ height: "100vh", width: "80%" }}
-      /></Provider>
-      
+      <Provider store={store}>
+        <ModelSettingsPanel
+          printableDrum={printableDrum}
+          generateModel={generateModel}
+          loading={loading}
+          style={{
+            width: "20%",
+            margin: "20px",
+            zIndex: 100,
+            height: "calc(100vh - 40px)",
+            borderRadius: "5px",
+          }}
+        />
+        <ModelViewer
+          printableDrum={printableDrum}
+          downloadModel={downloadModel}
+          loading={loading}
+          model={model}
+          modelProgress={modelProgress}
+          style={{ height: "100vh", width: "80%" }}
+        />
+      </Provider>
     </div>
   );
 }
