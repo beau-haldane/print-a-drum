@@ -6,9 +6,13 @@ import { wrap, proxy } from "comlink";
 import JSZip from "jszip";
 import { fileSave } from "browser-fs-access";
 import { ModelSettingsPanel } from "./components/ModelSettingsPanel/ModelSettingsPanel.tsx";
-import { DrumSchema } from "./components/ModelSettingsPanel/inputSchema.ts";
+import {
+  DrumSchema,
+  drumSchemaObject,
+} from "./components/ModelSettingsPanel/inputSchema.ts";
 import { defaultDrum } from "./model/defaultDrum.ts";
 import { ModelViewer } from "./components/ModelViewer.tsx";
+import LZString from "lz-string";
 
 THREE.Object3D.DEFAULT_UP.set(0, 0, 1);
 
@@ -40,7 +44,9 @@ export default function ReplicadApp() {
     progress: 0,
     messages: [],
   });
-  const [printableDrum, setPrintableDrum] = useState<DrumSchema>(defaultDrum);
+  const [printableDrum, setPrintableDrum] = useState<DrumSchema | null>(
+    null
+  );
 
   const updateModelProgress = (progress: number, message?: string) => {
     const modelProgressState = { ...modelProgress };
@@ -53,8 +59,8 @@ export default function ReplicadApp() {
     setModel(model);
   };
 
-  const generateModel = (drumSchema?: DrumSchema) => {
-    if (drumSchema) setPrintableDrum(drumSchema);
+  const generateModel = (drumSchema: DrumSchema) => {
+    setPrintableDrum(drumSchema);
     setLoading(true);
     cad // @ts-expect-error - see TODO on line 1
       .createAssembly(
@@ -72,7 +78,23 @@ export default function ReplicadApp() {
   };
 
   useEffect(() => {
-    generateModel();
+    const queryParams = new URLSearchParams(document.location.search).get(
+      "drumParams"
+    );
+
+    if (queryParams) {
+      const decodedParams = JSON.parse(
+        LZString.decompressFromEncodedURIComponent(queryParams)
+      );
+      const { success: validParams } =
+        drumSchemaObject.safeParse(decodedParams);
+
+      if (validParams) {
+        generateModel(decodedParams);
+      }
+    } else {
+      generateModel(defaultDrum);
+    }
   }, []);
 
   return (
@@ -100,6 +122,7 @@ export default function ReplicadApp() {
         }}
       />
       <ModelViewer
+        printableDrum={printableDrum}
         downloadModel={downloadModel}
         loading={loading}
         model={model}

@@ -97,33 +97,37 @@ export const ModelSettingsPanel = ({
               </>
             )}
           </p>
-          <ShellParameterOptions
-            printableDrum={printableDrum}
-            register={register}
-            errors={errors}
-            style={accordionStyle}
-          />
-          <LugParameterOptions
-            printableDrum={printableDrum}
-            register={register}
-            errors={errors}
-            watch={watch}
-            style={accordionStyle}
-          />
-          <BearingEdgeParameterOptions
-            printableDrum={printableDrum}
-            register={register}
-            errors={errors}
-            watch={watch}
-            style={accordionStyle}
-          />
-          {drumType === "snare" && (
-            <SnareParameterOptions
-              printableDrum={printableDrum}
-              register={register}
-              errors={errors}
-              style={accordionStyle}
-            />
+          {printableDrum && (
+            <>
+              <ShellParameterOptions
+                printableDrum={printableDrum}
+                register={register}
+                errors={errors}
+                style={accordionStyle}
+              />
+              <LugParameterOptions
+                printableDrum={printableDrum}
+                register={register}
+                errors={errors}
+                watch={watch}
+                style={accordionStyle}
+              />
+              <BearingEdgeParameterOptions
+                printableDrum={printableDrum}
+                register={register}
+                errors={errors}
+                watch={watch}
+                style={accordionStyle}
+              />
+              {drumType === "snare" && (
+                <SnareParameterOptions
+                  printableDrum={printableDrum}
+                  register={register}
+                  errors={errors}
+                  style={accordionStyle}
+                />
+              )}
+            </>
           )}
         </div>
         <button

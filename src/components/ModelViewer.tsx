@@ -1,52 +1,48 @@
 import React from "react";
-import { TailSpin } from "react-loader-spinner";
 import PresentationViewer from "../replicad-studio-components/PresentationViewer";
+import { Button } from "./Button";
+import LZString from "lz-string";
 
 const convertToPercentage = (number) => {
   const percentage = number * 100;
   return percentage.toFixed(2) + "%";
 };
 
+const getShareableLink = (printableDrum) => {
+  const encodedParams = LZString.compressToEncodedURIComponent(JSON.stringify(printableDrum))
+  const currentURL = new URL(window.location.href)
+  console.log(currentURL.origin);
+  
+  navigator.clipboard.writeText(`${currentURL.origin}/?drumParams=${encodedParams}`);
+};
+
 export const ModelViewer = ({
+  printableDrum,
   downloadModel,
   loading,
   model,
   modelProgress,
-  style
+  style,
 }) => (
   <section style={style}>
-    <button
-      onClick={() => downloadModel()}
+    <div
       style={{
-        fontFamily: "Roboto",
-        height: "2em",
-        fontSize: "1em",
-        fontWeight: 550,
         position: "absolute",
+        display: "flex",
+        flexDirection: "row",
+        gap: "0.5em",
         right: "0px",
         margin: "20px",
         zIndex: 100,
       }}
     >
-      {loading ? (
-        <TailSpin
-          visible={true}
-          height="20"
-          width="20"
-          color="#000"
-          ariaLabel="tail-spin-loading"
-          radius="1"
-          wrapperStyle={{
-            width: "100%",
-            display: "flex",
-            justifyContent: "center",
-          }}
-          wrapperClass=""
-        />
-      ) : (
-        "Download STL Files"
-      )}
-    </button>
+      <Button onClick={downloadModel} buttonText="Download STLs" loading={loading} />
+      <Button
+        onClick={() => getShareableLink(printableDrum)}
+        buttonText="Copy Link"
+        loading={loading}
+      />
+    </div>
     {!loading && model ? (
       <PresentationViewer
         shapes={model}
