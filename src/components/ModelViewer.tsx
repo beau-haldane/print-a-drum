@@ -1,10 +1,19 @@
 import React from "react";
 import { TailSpin } from "react-loader-spinner";
 import PresentationViewer from "../replicad-studio-components/PresentationViewer";
+import LZString from "lz-string";
 
 const convertToPercentage = (number) => {
   const percentage = number * 100;
   return percentage.toFixed(2) + "%";
+};
+
+const getShareableLink = (printableDrum) => {
+  const encodedParams = LZString.compressToEncodedURIComponent(JSON.stringify(printableDrum))
+  const currentURL = new URL(window.location.href)
+  console.log(currentURL.origin);
+  
+  navigator.clipboard.writeText(`${currentURL.origin}/?drumParams=${encodedParams}`);
 };
 
 export const ModelViewer = ({
