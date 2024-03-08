@@ -100,6 +100,7 @@ export default function ReplicadApp() {
         }}
       />
       <ModelViewer
+        printableDrum={printableDrum}
         downloadModel={downloadModel}
         loading={loading}
         model={model}
