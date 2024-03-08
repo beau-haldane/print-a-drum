@@ -3,7 +3,7 @@ import unitReducer from "./unitSlice"
 
 export const store = configureStore({
   reducer: {
-    unit: unitReducer
+    unit: unitReducer,
   }
 })
 

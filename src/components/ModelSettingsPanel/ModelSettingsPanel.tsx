@@ -29,7 +29,7 @@ export const ModelSettingsPanel = ({
 
   const onSubmit: SubmitHandler<DrumSchema> = (drumSchema) => {
     console.log(drumSchema);
-    // generateModel(drumSchema);
+    generateModel(drumSchema);
   };
 
   const onError = (arg1, arg2) => {
@@ -102,7 +102,7 @@ export const ModelSettingsPanel = ({
             )}
           </p>
           {printableDrum && (
-            <>
+            <div>
               <ShellParameterOptions
                 printableDrum={printableDrum}
                 register={register}
@@ -131,7 +131,7 @@ export const ModelSettingsPanel = ({
                   style={accordionStyle}
                 />
               )}
-            </>
+            </div>
           )}
         </div>
         <button
