@@ -31,6 +31,7 @@
     "comlink": "^4.3.1",
     "file-saver": "^2.0.5",
     "jszip": "^3.10.1",
+    "lz-string": "^1.5.0",
     "markdown-to-jsx": "^7.4.1",
     "polished": "^4.3.1",
     "react": "18.2.0",
@@ -42,9 +43,12 @@
     "replicad-opencascadejs": "^0.15.2",
     "replicad-threejs-helper": "^0.15.2",
     "styled-components": "^6.1.8",
-    "three": "0.148.0",
+    "three": "0.161.0",
     "typescript": "^5.3.3",
     "zod": "^3.22.4"
+  },
+  "overrides": {
+    "three": "0.161.0"
   },
   "devDependencies": {
     "@vitejs/plugin-react": "3.0.1",

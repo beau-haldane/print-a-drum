@@ -1,4 +1,4 @@
-import { DrumSchema } from "../components/ParameterSelector/inputSchema";
+import { DrumSchema } from "../components/ModelSettingsPanel/inputSchema";
 import {
   ShapeArray,
   ShellConstants,
@@ -6,7 +6,7 @@ import {
   WrappedShapeArray,
 } from "./types";
 import { generateChamferCuttingTool, generateSegmentBody } from "./utils";
-import { drawCircle, makePlane } from "replicad";
+import { EdgeFinder, drawCircle, makePlane } from "replicad";
 
 export const generateBearingEdges = ({
   shellConstants,
@@ -67,7 +67,7 @@ export const generateBearingEdges = ({
           bearingEdgeThickness: topBearingEdgeThickness,
         });
 
-  const findEdge = (e, edgeRadius, plane = basePlane) =>
+  const findEdge = (e: EdgeFinder, edgeRadius: number, plane = basePlane) =>
     e.ofCurveType("CIRCLE").atDistance(edgeRadius, [0, 0]).inPlane(plane);
 
   const bearingEdgeModels: {
@@ -244,13 +244,14 @@ export const generateBearingEdges = ({
       }).rotate(180),
     ];
 
-    bearingEdgeModels.bearingEdgesBottom = bearingEdgeModels.bearingEdgesBottom.map(bearingEdge => {
-      snareBedCuttingTools.forEach(cuttingTool => {
-        const clonedTool = cuttingTool.clone()
-        bearingEdge.shape = bearingEdge.shape.cut(clonedTool)
-      })
-      return bearingEdge
-    })
+    bearingEdgeModels.bearingEdgesBottom =
+      bearingEdgeModels.bearingEdgesBottom.map((bearingEdge) => {
+        snareBedCuttingTools.forEach((cuttingTool) => {
+          const clonedTool = cuttingTool.clone();
+          bearingEdge.shape = bearingEdge.shape.cut(clonedTool);
+        });
+        return bearingEdge;
+      });
   }
 
   return bearingEdgeModels;
@@ -341,6 +342,11 @@ const generateSnareBedCuttingTool = ({
   snareBedRadius,
   snareBedAngle,
   snareBedDepth,
+}: {
+  radius: number;
+  snareBedRadius: number;
+  snareBedAngle: number;
+  snareBedDepth: number;
 }): SolidShape =>
   drawCircle(snareBedRadius)
     .sketchOnPlane("XZ")

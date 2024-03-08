@@ -14,6 +14,7 @@ export const ModelSettingsPanel = ({
   printableDrum,
   generateModel,
   loading,
+  style,
 }) => {
   const [showDocumentation, setShowDocumentation] = useState(false);
   const {
@@ -54,11 +55,7 @@ export const ModelSettingsPanel = ({
         display: "flex",
         fontFamily: "Roboto",
         flexDirection: "row",
-        position: "absolute",
-        margin: "20px",
-        zIndex: 100,
-        height: "calc(100vh - 40px)",
-        borderRadius: "5px",
+        ...style,
       }}
     >
       <form
@@ -104,37 +101,38 @@ export const ModelSettingsPanel = ({
               </>
             )}
           </p>
-          <UnitSelector />
-          <div>
-            <ShellParameterOptions
-              printableDrum={printableDrum}
-              register={register}
-              errors={errors}
-              style={accordionStyle}
-            />
-            <LugParameterOptions
-              printableDrum={printableDrum}
-              register={register}
-              errors={errors}
-              watch={watch}
-              style={accordionStyle}
-            />
-            <BearingEdgeParameterOptions
-              printableDrum={printableDrum}
-              register={register}
-              errors={errors}
-              watch={watch}
-              style={accordionStyle}
-            />
-            {drumType === "snare" && (
-              <SnareParameterOptions
+          {printableDrum && (
+            <>
+              <ShellParameterOptions
                 printableDrum={printableDrum}
                 register={register}
                 errors={errors}
                 style={accordionStyle}
               />
-            )}
-          </div>
+              <LugParameterOptions
+                printableDrum={printableDrum}
+                register={register}
+                errors={errors}
+                watch={watch}
+                style={accordionStyle}
+              />
+              <BearingEdgeParameterOptions
+                printableDrum={printableDrum}
+                register={register}
+                errors={errors}
+                watch={watch}
+                style={accordionStyle}
+              />
+              {drumType === "snare" && (
+                <SnareParameterOptions
+                  printableDrum={printableDrum}
+                  register={register}
+                  errors={errors}
+                  style={accordionStyle}
+                />
+              )}
+            </>
+          )}
         </div>
         <button
           type="submit"
